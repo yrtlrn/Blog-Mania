@@ -1,0 +1,12 @@
+{
+  "name": "blog-mania",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "npm run server -prefix backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
