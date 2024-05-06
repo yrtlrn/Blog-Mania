@@ -3,13 +3,20 @@ import express, { Request, Response } from "express";
 import "dotenv/config";
 import cors from "cors";
 import session from "express-session";
-import rateLimit from "express-rate-limit";
+
 // Configs Imports
 import { OWASPHeadersConfig } from "./configs/headerCongif";
 import { corsConfigs } from "./configs/corsConfig";
 import { sessionConfig } from "./configs/sessionConfig";
 import { limiter } from "./configs/limiterConfig";
 import { connectToDb } from "./configs/dbConfig";
+
+// Custome Middleware Imports
+import { errorHanlder, notFoundMW } from "./middlewares/errors/NotFoundMW";
+
+
+// Routes Import
+import userRoutes from "./routes/userRoutes"
 
 // App
 const app = express();
@@ -20,9 +27,16 @@ app.use(cors(corsConfigs));
 app.use(session(sessionConfig));
 app.use(limiter);
 
-app.get("/api/v1", (req: Request, res: Response) => {
-  res.status(200).send("The server is running");
-});
+app.use(express.json())
+app.use(express.urlencoded({extended: false}))
+
+
+app.use("/api/v1",userRoutes )
+
+
+// Errors Handlers
+app.use(notFoundMW)
+app.use(errorHanlder)
 
 // Start server function
 const startServer = async () => {
