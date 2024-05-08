@@ -5,12 +5,55 @@ import asyncHandler from "express-async-handler";
 // Model Imports
 import User from "../models/userModel";
 
+// Utils Imports
+import { createSession } from "../utils/createSession";
+
 // DESC     Login in user
 // ROUTE    POST /api/v1/login
 // ACCESS   Public
 const loginUser = asyncHandler(
   async (req: Request, res: Response) => {
-    if (req.body.type === "username") {
+    const { username, email, password } = req.body;
+
+    // Empty fileds check
+    if (!username && !email) {
+      res.status(400);
+      throw new Error("Please enter a username or email");
+    }
+    if (!password) {
+      res.status(400);
+      throw new Error("Please enter your password");
+    }
+
+    // Find user
+    let user;
+    if (username) {
+      user = await User.findOne({ username: username });
+    } else {
+      user = await User.findOne({ email: email });
+    }
+
+    // If user not found
+    if (!user) {
+      res.status(401);
+      throw new Error("User does not exist");
+    }
+
+    if (await user.checkpassword(password)) {
+      createSession(req, user._id);
+      res
+        .status(200)
+        .json({ message: "User Log In Successful" });
+      return;
+    } else {
+      res.status(400);
+      if (username) {
+        throw new Error(
+          "Username or Password is Incorrect"
+        );
+      } else {
+        throw new Error("Email or Password is Incorrect");
+      }
     }
   }
 );
@@ -62,7 +105,7 @@ const registerUser = asyncHandler(
       lastName,
       username,
       email,
-      password
+      password,
     });
 
     if (newUser) {
@@ -77,6 +120,26 @@ const registerUser = asyncHandler(
   }
 );
 
+// DESC     Send user's profile data
+// ROUTE    Get /api/v1/user/profile
+// ACCESS   Private
+const profileData = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = await User.findById(
+      req.session.userId
+    ).select("firstName lastName email");
 
+    if (!user) {
+      res.status(404);
+      throw new Error("User does not exist");
+    }
 
-export {registerUser}
+    res.status(200).json({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    });
+  }
+);
+
+export { registerUser, loginUser,profileData };

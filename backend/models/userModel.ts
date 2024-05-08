@@ -11,6 +11,7 @@ type userSchemaType = {
   perferences: Array<Object>;
   following: Array<string>;
   followers: Array<string>;
+  checkpassword: (password:string) => boolean;
 };
 
 const userSchema = new Schema<userSchemaType>({
@@ -79,6 +80,12 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
+userSchema.method("checkpassword", async function(password:string) {
+  const passCheck = await bcrypt.compare(password,this.password)
+  return passCheck
+})
+
 
 const User = mongoose.model<userSchemaType>(
   "users",
