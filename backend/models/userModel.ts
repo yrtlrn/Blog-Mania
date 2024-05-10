@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
-const { Schema } = mongoose;
 
 type userSchemaType = {
   firstName: string;
@@ -8,13 +7,19 @@ type userSchemaType = {
   username: string;
   email: string;
   password: string;
-  perferences: Array<Object>;
+  perferences: {
+    contentDisplay: "left" | "right" | "center";
+    accountVisibility: "public" | "private";
+    hideFollowers: boolean;
+    hideFollowing: boolean;
+  };
   following: Array<string>;
   followers: Array<string>;
-  checkpassword: (password:string) => boolean;
+  savedArticles: Array<Schema.Types.ObjectId>;
+  checkpassword: (password: string) => boolean;
 };
 
-const userSchema = new Schema<userSchemaType>({
+const userSchema = new mongoose.Schema<userSchemaType>({
   firstName: {
     type: String,
     required: true,
@@ -49,12 +54,16 @@ const userSchema = new Schema<userSchemaType>({
     type: String,
     required: true,
     minlength: 6,
-    maxlength: 15,
     trim: true,
   },
   perferences: {
-    type: [Object],
-    default: [],
+    type: {},
+    default: {
+      contentDisplay: "left",
+      accountVisibility: "public",
+      hideFollowers: false,
+      hideFollowing: false,
+    },
   },
   following: {
     type: [String],
@@ -62,6 +71,10 @@ const userSchema = new Schema<userSchemaType>({
   },
   followers: {
     type: [String],
+    default: [],
+  },
+  savedArticles: {
+    type: [Schema.Types.ObjectId],
     default: [],
   },
 });
@@ -81,11 +94,28 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.method("checkpassword", async function(password:string) {
-  const passCheck = await bcrypt.compare(password,this.password)
-  return passCheck
-})
+userSchema.pre("findOneAndUpdate", async function (next) {
+  const updatedValue: any = this.getUpdate();
+  if (updatedValue!.password) {
+    const hashedPassword = await bcrypt.hash(
+      updatedValue.password,
+      10
+    );
+    this.set({ password: hashedPassword });
+  }
+  next();
+});
 
+userSchema.method(
+  "checkpassword",
+  async function (password: string) {
+    const passCheck = await bcrypt.compare(
+      password,
+      this.password
+    );
+    return passCheck;
+  }
+);
 
 const User = mongoose.model<userSchemaType>(
   "users",

@@ -1,24 +1,49 @@
 // Package Imports
-import express from "express"
+import express from "express";
 
 // Controllers Imports
-import { loginUser, profileData, registerUser } from "../controllers/userControllers"
+import {
+  editProfile,
+  editSetting,
+  loginUser,
+  profileData,
+  registerUser,
+  removeArticle,
+  saveArticleToUser,
+  savedArticles,
+  settingData,
+} from "../controllers/userControllers";
 
 // Utilis Import
-import { authCheck } from "../utils/authCheck"
+import { authCheck } from "../utils/authCheck";
 
-
-const router = express.Router()
+const router = express.Router();
 
 // Public Routes
-router.post("/register", registerUser)
-router.post("/login",loginUser)
+router.post("/register", registerUser);
+router.post("/login", loginUser);
 
 // Private Routes
-router.get("/user/profile",authCheck, profileData)
+router
+  .route("/user/profile")
+  .get(authCheck, profileData)
+  .post(authCheck, editProfile);
 
+router
+  .route("/user/setting")
+  .get(authCheck, settingData)
+  .post(editSetting);
 
+router.get("/user/articles", authCheck, savedArticles);
+router.post(
+  "/user/article/save",
+  authCheck,
+  saveArticleToUser
+);
+router.delete(
+  "/user/article/remove",
+  authCheck,
+  removeArticle
+);
 
-
-
-export default router
+export default router;
