@@ -20,6 +20,7 @@ type userSchemaType = {
 };
 
 const userSchema = new mongoose.Schema<userSchemaType>({
+const userSchema = new mongoose.Schema<userSchemaType>({
   firstName: {
     type: String,
     required: true,
@@ -64,6 +65,13 @@ const userSchema = new mongoose.Schema<userSchemaType>({
       hideFollowers: false,
       hideFollowing: false,
     },
+    type: {},
+    default: {
+      contentDisplay: "left",
+      accountVisibility: "public",
+      hideFollowers: false,
+      hideFollowing: false,
+    },
   },
   following: {
     type: [Types.ObjectId],
@@ -94,6 +102,28 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("findOneAndUpdate", async function (next) {
+  const updatedValue: any = this.getUpdate();
+  if (updatedValue!.password) {
+    const hashedPassword = await bcrypt.hash(
+      updatedValue.password,
+      10
+    );
+    this.set({ password: hashedPassword });
+  }
+  next();
+});
+
+userSchema.method(
+  "checkpassword",
+  async function (password: string) {
+    const passCheck = await bcrypt.compare(
+      password,
+      this.password
+    );
+    return passCheck;
+  }
+);
 userSchema.pre("findOneAndUpdate", async function (next) {
   const updatedValue: any = this.getUpdate();
   if (updatedValue!.password) {

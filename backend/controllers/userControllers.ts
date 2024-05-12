@@ -1,5 +1,6 @@
 // Package Imports
-import { Request, Response, json } from "express";
+import { Request, Response } from "express";
+
 import asyncHandler from "express-async-handler";
 
 // Model Imports
@@ -140,6 +141,7 @@ const logoutUser = asyncHandler(
 );
 
 // DESC     Send user's profile data
+// ROUTE    GET /api/v1/user/profile
 // ROUTE    GET /api/v1/user/profile
 // ACCESS   Private
 const profileData = asyncHandler(
