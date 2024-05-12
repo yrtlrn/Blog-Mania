@@ -1,6 +1,5 @@
 // Package Imports
 import express from "express";
-import express from "express";
 
 // Controllers Imports
 import {
@@ -22,9 +21,7 @@ import {
 
 // Utilis Import
 import { authCheck } from "../utils/authCheck";
-import { authCheck } from "../utils/authCheck";
 
-const router = express.Router();
 const router = express.Router();
 
 // Public Routes
@@ -70,7 +67,5 @@ router.post(
   authCheck,
   removeFromFollowing
 );
-
-export default router;
 
 export default router;

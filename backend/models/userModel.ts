@@ -20,7 +20,6 @@ type userSchemaType = {
 };
 
 const userSchema = new mongoose.Schema<userSchemaType>({
-const userSchema = new mongoose.Schema<userSchemaType>({
   firstName: {
     type: String,
     required: true,
@@ -58,13 +57,6 @@ const userSchema = new mongoose.Schema<userSchemaType>({
     trim: true,
   },
   perferences: {
-    type: {},
-    default: {
-      contentDisplay: "left",
-      accountVisibility: "public",
-      hideFollowers: false,
-      hideFollowing: false,
-    },
     type: {},
     default: {
       contentDisplay: "left",
