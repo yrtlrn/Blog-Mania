@@ -9,6 +9,7 @@ const store = new MongoDBSession({
   collection: "Session",
 });
 
+
 export const sessionConfig = {
   name: "sessionCookie",
   secret: process.env.SESSION_KEY as string,
@@ -18,7 +19,6 @@ export const sessionConfig = {
   cookie: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
     sameSite: true,
   },
 };

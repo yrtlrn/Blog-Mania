@@ -4,6 +4,7 @@ type articleSchemaType = {
   title: string;
   author: Schema.Types.ObjectId;
   otherPeople: Array<Schema.Types.ObjectId>;
+  tag: string;
   content: string;
   //   media: string;
 };
@@ -24,6 +25,10 @@ const articleSchema =
     otherPeople: {
       type: [Schema.Types.ObjectId],
       default: [],
+    },
+    tag: {
+      type: String,
+      required: true,
     },
     content: {
       type: String,
