@@ -24,7 +24,7 @@ const articleSchema =
     },
     otherPeople: {
       type: [Schema.Types.ObjectId],
-      default: [],
+      
     },
     tag: {
       type: String,
