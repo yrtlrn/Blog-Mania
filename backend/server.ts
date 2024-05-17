@@ -12,11 +12,14 @@ import { limiter } from "./configs/limiterConfig";
 import { connectToDb } from "./configs/dbConfig";
 
 // Custome Middleware Imports
-import { errorHanlder, notFoundMW } from "./middlewares/errors/NotFoundMW";
-
+import {
+  errorHanlder,
+  notFoundMW,
+} from "./middlewares/errors/NotFoundMW";
 
 // Routes Import
-import userRoutes from "./routes/userRoutes"
+import userRoutes from "./routes/userRoutes";
+import articleRoutes from "./routes/articleRoutes";
 
 // App
 const app = express();
@@ -27,16 +30,16 @@ app.use(cors(corsConfigs));
 app.use(session(sessionConfig));
 app.use(limiter);
 
-app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-
-app.use("/api/v1",userRoutes )
-
+// Routes
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/articles", articleRoutes);
 
 // Errors Handlers
-app.use(notFoundMW)
-app.use(errorHanlder)
+app.use(notFoundMW);
+app.use(errorHanlder);
 
 // Start server function
 const startServer = async () => {

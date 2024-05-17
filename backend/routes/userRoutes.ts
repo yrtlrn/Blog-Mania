@@ -33,37 +33,25 @@ router.post("/login", loginUser);
 router.post("/logout", authCheck, logoutUser);
 
 router
-  .route("/user/profile")
+  .route("/profile")
   .get(authCheck, profileData)
   .post(authCheck, editProfile);
 
 router
-  .route("/user/setting")
+  .route("/setting")
   .get(authCheck, settingData)
   .post(editSetting);
 
-router.get("/user/articles", authCheck, savedArticles);
-router.post(
-  "/user/article/save",
-  authCheck,
-  saveArticleToUser
-);
-router.delete(
-  "/user/article/remove",
-  authCheck,
-  removeArticle
-);
+router.get("/articles", authCheck, savedArticles);
+router.post("/article/save", authCheck, saveArticleToUser);
+router.delete("/article/remove", authCheck, removeArticle);
 
 // todo - Need to check the routes below
-router.get("/user/followers", authCheck, followersList);
-router.get("/user/following", authCheck, followingList);
+router.get("/followers", authCheck, followersList);
+router.get("/following", authCheck, followingList);
+router.post("/following/add", authCheck, addToFollowing);
 router.post(
-  "/user/following/add",
-  authCheck,
-  addToFollowing
-);
-router.post(
-  "/user/following/remove",
+  "/following/remove",
   authCheck,
   removeFromFollowing
 );

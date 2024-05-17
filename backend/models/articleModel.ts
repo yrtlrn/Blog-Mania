@@ -6,7 +6,7 @@ type articleSchemaType = {
   otherPeople: Array<Schema.Types.ObjectId>;
   tag: string;
   content: string;
-  //   media: string;
+  media: Array<String>;
 };
 
 const articleSchema =
@@ -35,11 +35,15 @@ const articleSchema =
       minlength: 10,
       required: true,
     },
-    // media: {
-    //   type: String,
-    // },
+    media: {
+      type: [String],
+      default: [],
+    },
   });
 
-const Article = mongoose.model("article", articleSchema);
+const Article = mongoose.model<articleSchemaType>(
+  "article",
+  articleSchema
+);
 
 export default Article;

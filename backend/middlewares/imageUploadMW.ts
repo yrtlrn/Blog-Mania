@@ -1,0 +1,58 @@
+import multer, { FileFilterCallback } from "multer";
+import { cloudinary } from "../configs/cloudinaryConfig";
+import { NextFunction, Request, Response } from "express";
+
+
+const uploadPhoto = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (
+    req: Request,
+    file: Express.Multer.File,
+    cb: FileFilterCallback
+  ) => {
+    if (!file || file.mimetype.split("/")[0] != "image") {
+      return cb(new Error("Only images allowed"));
+    }
+    cb(null, true);
+  },
+});
+
+const uploadToCloudinary = (
+  buffer: Buffer,
+  options = {}
+) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(options, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      })
+      .end(buffer);
+  });
+};
+
+const resizeAndUploadImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.files || req.files.length === 0) return next();
+  try {
+    //@ts-ignore
+    const uploadPromises = req.files.map(
+      (file: Express.Multer.File) =>
+        uploadToCloudinary(file.buffer, {})
+    );
+    const results = (await Promise.all(uploadPromises)) as [
+      { url: string }
+    ];
+    //@ts-ignore
+    req.imageUrls = results.map((result) => result.url);
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { uploadPhoto, resizeAndUploadImage };
