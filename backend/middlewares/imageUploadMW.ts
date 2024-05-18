@@ -1,7 +1,9 @@
+// Package Imports
 import multer, { FileFilterCallback } from "multer";
-import { cloudinary } from "../configs/cloudinaryConfig";
 import { NextFunction, Request, Response } from "express";
 
+// Config Imports
+import { cloudinary } from "../configs/cloudinaryConfig";
 
 const uploadPhoto = multer({
   storage: multer.memoryStorage(),
@@ -47,7 +49,7 @@ const resizeAndUploadImage = async (
     const results = (await Promise.all(uploadPromises)) as [
       { url: string }
     ];
-    //@ts-ignore
+    
     req.imageUrls = results.map((result) => result.url);
     next();
   } catch (error) {

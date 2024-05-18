@@ -42,7 +42,7 @@ const loginUser = asyncHandler(
     }
 
     if (await user.checkpassword(password)) {
-      createSession(req, user._id);
+      createSession(req, user._id, user.username);
       if (req.body.remember) {
         req.session.cookie.maxAge = 14 * 24 * 3600000; // 2 Weeks
       } else {
@@ -117,6 +117,7 @@ const registerUser = asyncHandler(
     });
 
     if (newUser) {
+      createSession(req, newUser._id, newUser.username);
       res
         .status(201)
         .json({ message: "User created Sucessfully" });
@@ -164,7 +165,7 @@ const profileData = asyncHandler(
 );
 
 // DESC     Update user's profile data
-// ROUTE    POST /api/v1/user/profile
+// ROUTE    PUT /api/v1/user/profile
 // ACCESS   Private
 const editProfile = asyncHandler(
   async (req: Request, res: Response) => {

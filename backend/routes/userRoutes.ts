@@ -35,7 +35,7 @@ router.post("/logout", authCheck, logoutUser);
 router
   .route("/profile")
   .get(authCheck, profileData)
-  .post(authCheck, editProfile);
+  .put(authCheck, editProfile);
 
 router
   .route("/setting")

@@ -7,39 +7,61 @@ type articleSchemaType = {
   tag: string;
   content: string;
   media: Array<String>;
+  likes: Array<Schema.Types.ObjectId>;
+  comments: Array<{
+    username: string,
+    content: string,
+    date: string
+  }>;
 };
 
 const articleSchema =
-  new mongoose.Schema<articleSchemaType>({
-    title: {
-      type: String,
-      minlength: 3,
-      required: true,
-      trim: true,
+  new mongoose.Schema<articleSchemaType>(
+    {
+      title: {
+        type: String,
+        minlength: 3,
+        required: true,
+        trim: true,
+      },
+      author: {
+        type: Schema.Types.ObjectId,
+        minlength: 3,
+        required: true,
+      },
+      otherPeople: {
+        type: [Schema.Types.ObjectId],
+      },
+      tag: {
+        type: String,
+        required: true,
+      },
+      content: {
+        type: String,
+        minlength: 10,
+        required: true,
+      },
+      media: {
+        type: [String],
+        default: [],
+      },
+      likes: {
+        type: [Schema.Types.ObjectId],
+      },
+      comments: {
+        type: [
+          {
+            username: String,
+            content: String,
+            date: Schema.Types.Date,
+          },
+        ],
+      },
     },
-    author: {
-      type: Schema.Types.ObjectId,
-      minlength: 3,
-      required: true,
-    },
-    otherPeople: {
-      type: [Schema.Types.ObjectId],
-      
-    },
-    tag: {
-      type: String,
-      required: true,
-    },
-    content: {
-      type: String,
-      minlength: 10,
-      required: true,
-    },
-    media: {
-      type: [String],
-      default: [],
-    },
-  });
+    {
+      timestamps: true,
+    }
+  );
 
 const Article = mongoose.model<articleSchemaType>(
   "article",

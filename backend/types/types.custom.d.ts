@@ -14,6 +14,7 @@ declare module "express-session" {
   export interface SessionData {
     userId: Types.ObjectId;
     authorized: boolean;
+    username: string
   }
 }
 
