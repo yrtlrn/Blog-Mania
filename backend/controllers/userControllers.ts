@@ -453,6 +453,7 @@ const addToFollowing = asyncHandler(
           throw new Error("Something went wrong");
         }
       }
+    } else {
       res
         .status(500)
         .json({ message: "Something went wrong" });

@@ -5,8 +5,10 @@ import express from "express";
 import {
   commentOnArticle,
   createArticle,
+  deleteComment,
   editComment,
   getAllArticles,
+  getFollowingArticles,
   getTagArticles,
   likeOrUnlikeArticle,
 } from "../controllers/articleControllers";
@@ -37,6 +39,8 @@ router.get("/search/tag", getTagArticles);
 router.post("/like", authCheck, likeOrUnlikeArticle);
 router.post("/comment", authCheck, commentOnArticle)
 router.put("/comment/edit", authCheck, editComment)
+router.delete("/comment/delete", authCheck, deleteComment)
+router.get("/following", authCheck, getFollowingArticles)
 
 
 export default router;

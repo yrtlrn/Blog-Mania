@@ -6,7 +6,6 @@ import asyncHandler from "express-async-handler";
 import Article from "../models/articleModel";
 import User from "../models/userModel";
 import { Types } from "mongoose";
-import { Schema } from "express-validator";
 
 // DESC    Get all articles
 // ROUTE   GET /api/v1/articles
@@ -145,6 +144,11 @@ const likeOrUnlikeArticle = asyncHandler(
   async (req: Request, res: Response) => {
     const { articleId } = req.body;
 
+    if (!articleId) {
+      res.status(400);
+      throw new Error("Article Id is not provided");
+    }
+
     const article = await Article.findById(articleId);
 
     if (!article) {
@@ -179,6 +183,11 @@ const commentOnArticle = asyncHandler(
   async (req: Request, res: Response) => {
     const { comment, articleId } = req.body;
 
+    if (!articleId) {
+      res.status(400);
+      throw new Error("Article Id is not provided");
+    }
+
     const article = await Article.findById(articleId);
 
     if (!article) {
@@ -186,7 +195,7 @@ const commentOnArticle = asyncHandler(
       throw new Error("Article not found");
     }
 
-    const userCommented = await Article.find({
+    const userCommented = await Article.findOne({
       "comments.username": req.session.username,
     });
 
@@ -224,6 +233,11 @@ const editComment = asyncHandler(
   async (req: Request, res: Response) => {
     const { articleId, newComment } = req.body;
 
+    if (!articleId) {
+      res.status(400);
+      throw new Error("Article Id is not provided");
+    }
+
     if (!newComment) {
       res.status(404);
       throw new Error("Comment can not be blank");
@@ -236,7 +250,7 @@ const editComment = asyncHandler(
       throw new Error("Article not found");
     }
 
-    const userCommented = await Article.find({
+    const userCommented = await Article.findOne({
       "comments.username": req.session.username,
     });
 
@@ -265,6 +279,100 @@ const editComment = asyncHandler(
   }
 );
 
+// DESC    Delete a comment
+// ROUTE   DELETE /api/v1/articles/comment/delete
+// ACCESS  Private
+const deleteComment = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { articleId } = req.body;
+
+    if (!articleId) {
+      res.status(400);
+      throw new Error("Article Id is not provided");
+    }
+
+    const article = await Article.findById(articleId);
+
+    if (!article) {
+      res.status(404);
+      throw new Error("Article does not exist");
+    }
+
+    const userCommented = await Article.findOne({
+      "comments.username": req.session.username,
+    });
+
+    if (!userCommented) {
+      res.status(404);
+      throw new Error("Comment not found");
+    }
+
+    const commentDeleted = await Article.updateOne(
+      {
+        "comments.username": req.session.username,
+      },
+      {
+        $pull: {
+          comments: {
+            username: req.session.username,
+          },
+        },
+      }
+    );
+
+    if (!commentDeleted) {
+      res.status(500);
+      throw new Error("Something went wrong");
+    } else {
+      res.status(200).json({ message: "Comment Deleted" });
+    }
+  }
+);
+
+// DESC    Get Following user's articles
+// ROUTE   Get /api/v1/articles/following
+// ACCESS  Private
+const getFollowingArticles = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = await User.findById(req.session.userId);
+
+    if (!user) {
+      res.status(400);
+      throw new Error("User does not exist");
+    }
+
+    const followingArticles = async () => {
+      let followingArticleArray = [];
+      // await user.following.forEach(async (followingUser) => {
+      //   const getfollowingArticles = await Article.find({
+      //     author: followingUser,
+      //   });
+      //   console.log("Inside")
+
+      //   for (let z = 0; z < getfollowingArticles.length; z++) {
+      //     const data = (getfollowingArticles[z]);
+      //     articleArray.push(data)
+      //   }
+      // });
+      for (const followingUsers of user.following) {
+        const getArticles = await Article.find({
+          author: followingUsers,
+        });
+        for (let z = 0; z < getArticles.length; z++) {
+          followingArticleArray.push(getArticles[z]);
+        }
+      }
+      return followingArticleArray
+    };
+
+    const finalData = await followingArticles();
+
+    res
+      .status(200)
+      .json({ message: "Test", data: finalData });
+  }
+);
+
 export {
   getAllArticles,
   createArticle,
@@ -272,4 +380,6 @@ export {
   likeOrUnlikeArticle,
   commentOnArticle,
   editComment,
+  deleteComment,
+  getFollowingArticles,
 };
