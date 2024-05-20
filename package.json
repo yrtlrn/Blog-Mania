@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "npm run server -prefix backend"
+    "server": "npm run server -prefix backend",
+    "client": "npm run client -prefix frontend"
   },
   "keywords": [],
   "author": "",

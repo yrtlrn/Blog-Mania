@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .show {
+    @apply bg-red-200;
+  }
+  .absCenter {
+    @apply absolute top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%];
+  }
+  .errorText {
+    @apply text-xs text-center text-red-500;
+  }
+  .pagArrowLeft {
+    @apply p-1 mr-1 flex justify-center items-center bg-base-200 h-[3rem] hover:bg-slate-700 rounded-lg w-10;
+  }
+  .pagArrowRight {
+    @apply p-1 ml-1 flex justify-center items-center bg-base-200 h-[3rem] hover:bg-slate-700 rounded-lg w-10;
+  }
+
+  /* Responseive Text Styles (Tailwind) */
+  .text-r-sm {
+    @apply text-sm md:text-base lg:text-lg;
+  }
+  .text-r-base {
+    @apply text-base md:text-lg lg:text-xl;
+  }
+  .text-r-lg {
+    @apply text-lg md:text-xl lg:text-2xl;
+  }
+  .text-r-xl {
+    @apply text-xl md:text-2xl lg:text-3xl;
+  }
+  .text-r-2xl {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+  .text-r-3xl {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+  .text-r-4xl {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+  .text-r-5xl {
+    @apply text-5xl md:text-6xl lg:text-7xl;
+  }
+  .text-r-6xl {
+    @apply text-6xl md:text-7xl lg:text-8xl;
+  }
+  .text-r-7xl {
+    @apply text-7xl md:text-8xl lg:text-9xl;
+  }
+}
