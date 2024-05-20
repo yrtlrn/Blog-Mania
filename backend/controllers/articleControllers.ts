@@ -71,6 +71,12 @@ const createArticle = asyncHandler(
 
     if (otherPeople) {
       const otherUserArray = otherPeople.split(",");
+      if (otherUserArray.includes(req.session.username)) {
+        res.status(400);
+        throw new Error(
+          "Other People can not include the user"
+        );
+      }
       const result: [string] = await getUserIds(
         otherUserArray
       );
@@ -195,13 +201,13 @@ const commentOnArticle = asyncHandler(
       throw new Error("Article not found");
     }
 
-    const userCommented = await Article.findOne({
-      "comments.username": req.session.username,
-    });
-
-    if (userCommented) {
-      res.status(400);
-      throw new Error("Already Commented on this Article");
+    for (const comment of article.comments) {
+      if (comment.username === req.session.username) {
+        res.status(400);
+        throw new Error(
+          "Already Commented on this Article"
+        );
+      }
     }
 
     const newCommentData = {
@@ -222,7 +228,6 @@ const commentOnArticle = asyncHandler(
     } else {
       res.status(201).json({ message: "Comment Added" });
     }
-    res.status(200).json({ message: "Done" });
   }
 );
 
@@ -259,9 +264,20 @@ const editComment = asyncHandler(
       throw new Error("Comment not found");
     }
 
+    const commentUsers = [];
+    for (const comment of article.comments) {
+      commentUsers.push(comment.username);
+    }
+
+    if (!commentUsers.includes(req.session.username!)) {
+      res.status(400);
+      throw new Error('User"s comment not found');
+    }
+
     const commentUpdated = await Article.updateOne(
       {
         "comments.username": req.session.username,
+        _id: articleId,
       },
       {
         $set: {
@@ -300,6 +316,7 @@ const deleteComment = asyncHandler(
 
     const userCommented = await Article.findOne({
       "comments.username": req.session.username,
+      _id: articleId,
     });
 
     if (!userCommented) {
@@ -310,6 +327,7 @@ const deleteComment = asyncHandler(
     const commentDeleted = await Article.updateOne(
       {
         "comments.username": req.session.username,
+        _id: articleId,
       },
       {
         $pull: {
@@ -343,17 +361,6 @@ const getFollowingArticles = asyncHandler(
 
     const followingArticles = async () => {
       let followingArticleArray = [];
-      // await user.following.forEach(async (followingUser) => {
-      //   const getfollowingArticles = await Article.find({
-      //     author: followingUser,
-      //   });
-      //   console.log("Inside")
-
-      //   for (let z = 0; z < getfollowingArticles.length; z++) {
-      //     const data = (getfollowingArticles[z]);
-      //     articleArray.push(data)
-      //   }
-      // });
       for (const followingUsers of user.following) {
         const getArticles = await Article.find({
           author: followingUsers,
@@ -362,7 +369,7 @@ const getFollowingArticles = asyncHandler(
           followingArticleArray.push(getArticles[z]);
         }
       }
-      return followingArticleArray
+      return followingArticleArray;
     };
 
     const finalData = await followingArticles();

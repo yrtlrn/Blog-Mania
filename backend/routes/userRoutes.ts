@@ -22,12 +22,22 @@ import {
 // Utilis Import
 import { authCheck } from "../utils/authCheck";
 
+// Validators Imports
+import {
+  loginValidator,
+  registerValidator,
+  editProfileValidator,
+  editSettingValidator,
+  articleIdValidator,
+  userIdValidator,
+} from "../middlewares/validation/userValidation";
+
 const router = express.Router();
 
 // Public Routes
-router.post("/register", registerUser);
+router.post("/register", registerValidator, registerUser);
 // todo - when frontend is built, check if session expires on window close
-router.post("/login", loginUser);
+router.post("/login", loginValidator, loginUser);
 
 // Private Routes
 router.post("/logout", authCheck, logoutUser);
@@ -35,24 +45,40 @@ router.post("/logout", authCheck, logoutUser);
 router
   .route("/profile")
   .get(authCheck, profileData)
-  .put(authCheck, editProfile);
+  .put(authCheck, editProfileValidator, editProfile);
 
 router
   .route("/setting")
   .get(authCheck, settingData)
-  .post(editSetting);
+  .post(authCheck,editSettingValidator, editSetting);
 
 router.get("/articles", authCheck, savedArticles);
-router.post("/article/save", authCheck, saveArticleToUser);
-router.delete("/article/remove", authCheck, removeArticle);
+router.post(
+  "/article/save",
+  authCheck,
+  articleIdValidator,
+  saveArticleToUser
+);
+router.delete(
+  "/article/remove",
+  authCheck,
+  articleIdValidator,
+  removeArticle
+);
 
 // todo - Need to check the routes below
 router.get("/followers", authCheck, followersList);
 router.get("/following", authCheck, followingList);
-router.post("/following/add", authCheck, addToFollowing);
+router.post(
+  "/following/add",
+  authCheck,
+  userIdValidator,
+  addToFollowing
+);
 router.post(
   "/following/remove",
   authCheck,
+  userIdValidator,
   removeFromFollowing
 );
 

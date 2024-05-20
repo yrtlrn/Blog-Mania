@@ -22,6 +22,14 @@ import {
 // Utils Imports
 import { authCheck } from "../utils/authCheck";
 
+// Validators Imports
+import { articleIdValidator } from "../middlewares/validation/userValidation";
+import {
+  createArticleValidator,
+  commentOnArticleValidator,
+  editCommentValidator,
+} from "../middlewares/validation/articleValidations";
+
 const router = express.Router();
 
 router
@@ -31,16 +39,26 @@ router
     authCheck,
     uploadPhoto.array("imageFiles", 6),
     resizeAndUploadImage,
+    createArticleValidator,
     createArticle
   );
 
 router.get("/search/tag", getTagArticles);
 
-router.post("/like", authCheck, likeOrUnlikeArticle);
-router.post("/comment", authCheck, commentOnArticle)
-router.put("/comment/edit", authCheck, editComment)
-router.delete("/comment/delete", authCheck, deleteComment)
-router.get("/following", authCheck, getFollowingArticles)
-
+router.post(
+  "/like",
+  authCheck,
+  articleIdValidator,
+  likeOrUnlikeArticle
+);
+router.post(
+  "/comment",
+  authCheck,
+  commentOnArticleValidator,
+  commentOnArticle
+);
+router.put("/comment/edit", authCheck,editCommentValidator, editComment);
+router.delete("/comment/delete", authCheck,articleIdValidator, deleteComment);
+router.get("/following", authCheck, getFollowingArticles);
 
 export default router;

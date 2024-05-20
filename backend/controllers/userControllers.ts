@@ -172,6 +172,7 @@ const editProfile = asyncHandler(
     const {
       firstName,
       lastName,
+      username,
       email,
       currentPassword,
       newPassword,
@@ -193,11 +194,21 @@ const editProfile = asyncHandler(
       res.status(400);
       throw new Error("Please select a different email");
     }
+    const duplicateUsername = await User.findOne({
+      username: username,
+      _id: { $ne: req.session.userId },
+    });
+
+    if (duplicateUsername) {
+      res.status(400);
+      throw new Error("Please select a different username");
+    }
 
     if (await user.checkpassword(currentPassword)) {
       user.firstName = firstName;
       user.lastName = lastName;
       user.email = email;
+      user.username = username;
       if (newPassword) {
         console.log("Password Update");
         await User.findByIdAndUpdate(
