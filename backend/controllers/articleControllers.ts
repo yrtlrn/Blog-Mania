@@ -12,7 +12,9 @@ import { Types } from "mongoose";
 // ACCESS  Public
 const getAllArticles = asyncHandler(
   async (req: Request, res: Response) => {
-    const article = await Article.find({});
+    const article = await Article.find({}).select(
+      "-__v -updatedAt"
+    );
 
     if (!article) {
       res.status(404);

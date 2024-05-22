@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "server": "npm run server -prefix backend",
-    "client": "npm run client -prefix frontend"
+    "client": "npm run client -prefix frontend",
+    "dev": "concurrently \"npm run client \" \"npm run server \""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

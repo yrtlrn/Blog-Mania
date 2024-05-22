@@ -2,12 +2,12 @@ import mongoose, { Schema } from "mongoose";
 
 type articleSchemaType = {
   title: string;
-  author: Schema.Types.ObjectId;
-  otherPeople: Array<Schema.Types.ObjectId>;
+  author: string;
+  otherPeople: Array<string>;
   tag: string;
   content: string;
   media: Array<String>;
-  likes: Array<Schema.Types.ObjectId>;
+  likes: Array<string>;
   comments: Array<{
     username: string,
     content: string,
@@ -25,12 +25,12 @@ const articleSchema =
         trim: true,
       },
       author: {
-        type: Schema.Types.ObjectId,
+        type: String,
         minlength: 3,
         required: true,
       },
       otherPeople: {
-        type: [Schema.Types.ObjectId],
+        type: [String],
       },
       tag: {
         type: String,
@@ -46,7 +46,7 @@ const articleSchema =
         default: [],
       },
       likes: {
-        type: [Schema.Types.ObjectId],
+        type: [String],
       },
       comments: {
         type: [
