@@ -8,9 +8,9 @@
   }
 
   .errorText {
-    @apply text-xs text-center text-red-500;
+    @apply font-bold text-center text-red-600 text-r-sm;
   }
-  
+
   /* Display */
   .absCenter {
     @apply absolute top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%];
@@ -22,7 +22,7 @@
     @apply p-1 ml-1 flex justify-center items-center bg-base-200 h-[3rem] hover:bg-slate-700 rounded-lg w-10;
   }
   .flex-i-center {
-    @apply flex items-center
+    @apply flex items-center;
   }
 
   /* Responseive Text Styles (Tailwind) */
@@ -55,5 +55,10 @@
   }
   .text-r-7xl {
     @apply text-7xl md:text-8xl lg:text-9xl;
+  }
+
+  /* Component Styles */
+  .btn {
+    @apply w-full p-3 font-semibold bg-orange-300 rounded-lg text-r-3xl hover:bg-orange-400;
   }
 }

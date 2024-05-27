@@ -25,7 +25,7 @@ const ArticleIndex = () => {
       setError
     );
     let allData = new Set([...data.current, ...res.data]);
-    data.current = [...allData]
+    data.current = [...allData];
     setLoading(false);
   };
 
@@ -58,19 +58,15 @@ const ArticleIndex = () => {
         <section>
           {data.current.map((article) => {
             return (
-              <>
-                {" "}
-                {data.current[data.current.length - 2].title ===
-                article.title ? (
+              <section key={article.title}>
+                {data.current[data.current.length - 2]
+                  .title === article.title ? (
                   <div ref={(elem) => setLastElement(elem)}>
                     {" "}
-                    Second last
                   </div>
-                ) : (
-                  ""
-                )}
-                <ArticleCard {...article} />;
-              </>
+                ) : null}
+                <ArticleCard {...article} />
+              </section>
             );
           })}
         </section>
