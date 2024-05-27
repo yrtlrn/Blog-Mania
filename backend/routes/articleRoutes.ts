@@ -25,6 +25,7 @@ import { authCheck } from "../utils/authCheck";
 // Validators Imports
 import { articleIdValidator } from "../middlewares/validation/userValidation";
 import {
+  getAllArticlesValidator,
   createArticleValidator,
   commentOnArticleValidator,
   editCommentValidator,
@@ -34,7 +35,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(getAllArticles)
+  .get(getAllArticlesValidator, getAllArticles)
   .post(
     authCheck,
     uploadPhoto.array("imageFiles", 6),
@@ -57,8 +58,18 @@ router.post(
   commentOnArticleValidator,
   commentOnArticle
 );
-router.put("/comment/edit", authCheck,editCommentValidator, editComment);
-router.delete("/comment/delete", authCheck,articleIdValidator, deleteComment);
+router.put(
+  "/comment/edit",
+  authCheck,
+  editCommentValidator,
+  editComment
+);
+router.delete(
+  "/comment/delete",
+  authCheck,
+  articleIdValidator,
+  deleteComment
+);
 router.get("/following", authCheck, getFollowingArticles);
 
 export default router;

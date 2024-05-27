@@ -15,19 +15,24 @@ export type articleType = {
 
 const apiUrl = "http://localhost:3000/api/v1";
 
-const getAllArticles = async () => {
-  const res = await fetch(`${apiUrl}/articles`, {
+const getAllArticles = async (
+  page: string,
+  setError: Function,
+) => {
+  const params = new URLSearchParams();
+  params.append("page", page);
+  return await fetch(`${apiUrl}/articles?${params}`, {
     method: "GET",
-  });
-
-  if (!res.ok) {
-    throw new Error("Error fetching data")
-  }
-
-  const resbody: { data: Array<articleType> } =
-    await res.json();
-
-  return resbody.data;
+  })
+    .then((data) => {
+      
+      return data.json();
+    })
+    .catch((error: Error) => {
+      
+      setError(error);
+      return;
+    });
 };
 
 export { getAllArticles };

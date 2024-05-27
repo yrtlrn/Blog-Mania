@@ -12,9 +12,13 @@ import { Types } from "mongoose";
 // ACCESS  Public
 const getAllArticles = asyncHandler(
   async (req: Request, res: Response) => {
+    const page = req.query.page || 1
+    const skip = (page as number - 1) * 10
+    const limit = 10
+
     const article = await Article.find({}).select(
       "-__v -updatedAt"
-    );
+    ).skip(skip).limit(limit)
 
     if (!article) {
       res.status(404);

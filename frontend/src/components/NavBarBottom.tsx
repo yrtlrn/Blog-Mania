@@ -1,27 +1,30 @@
 const NavBarBottom = () => {
   return (
-    <section className="flex justify-around px-4 py-2 bg-orange-400">
-      <button>
+    <section className="flex justify-around px-4 py-2 bg-orange-400 ">
+      <button className="flex-col flex-i-center">
         <img
-          src="../../public/assets/home.png"
+          src="/assets/home.png"
           width={40}
           height={40}
         />
+        <aside className="text-r-base">Home</aside>
       </button>
-      <button>
+      <button className="flex-col flex-i-center">
         <img
-          src="../../public/assets/create.png"
+          src="/assets/create.png"
           width={40}
           height={40}
         />
+        <aside className="text-r-base">Create</aside>
       </button>
-      <button>
+      <button className="flex-col flex-i-center">
         <img
           className="font-bold"
-          src="../../public/assets/following.png"
+          src="/assets/following.png"
           width={40}
           height={40}
         />
+        <aside className="text-r-base">Following</aside>
       </button>
     </section>
   );

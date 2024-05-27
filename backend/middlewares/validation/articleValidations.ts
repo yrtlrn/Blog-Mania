@@ -1,5 +1,25 @@
-import { body, validationResult } from "express-validator";
+import {
+  body,
+  validationResult,
+  query,
+} from "express-validator";
 import { Request, Response, NextFunction } from "express";
+
+const getAllArticlesValidator = [
+  query("page").isInt().escape(),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422);
+      res.json({
+        message: "Validation Error",
+        error: errors.array(),
+      });
+      return;
+    }
+    next();
+  },
+];
 
 const createArticleValidator = [
   body("title")
@@ -89,5 +109,9 @@ const editCommentValidator = [
   },
 ];
 
-
-export {createArticleValidator,commentOnArticleValidator,editCommentValidator}
+export {
+  getAllArticlesValidator,
+  createArticleValidator,
+  commentOnArticleValidator,
+  editCommentValidator,
+};

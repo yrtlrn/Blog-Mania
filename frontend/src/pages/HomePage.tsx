@@ -1,13 +1,12 @@
-import ArticleCard from "../features/articles/ArticleCard"
+import ArticleIndex from "../features/articles/ArticleIndex";
 
 const HomePage = () => {
   return (
     <div>
-        <h1>Home Page</h1>
-        <section>
-            <ArticleCard />
-        </section>
+      <section>
+        <ArticleIndex />
+      </section>
     </div>
-  )
-}
-export default HomePage
+  );
+};
+export default HomePage;

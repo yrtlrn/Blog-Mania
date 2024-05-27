@@ -3,7 +3,7 @@ const NavBarTop = () => {
     <nav className="flex justify-between px-4 py-2 bg-orange-400">
       <div className="flex-i-center">
         <img
-          src="../../public/assets/BlogManiaLogo.png"
+          src="/assets/BlogManiaLogo.png"
           width={40}
           height={40}
         />
@@ -11,27 +11,30 @@ const NavBarTop = () => {
       </div>
 
       <section className="invisible w-[70%] md:visible  flex items-center md:justify-around lg:justify-end lg:gap-10">
-        <button>
+        <button className="flex-col flex-i-center">
           <img
-            src="../../public/assets/home.png"
+            src="/assets/home.png"
             width={40}
             height={40}
           />
+          <aside className="text-r-base">Home</aside>
         </button>
-        <button>
+        <button className="flex-col flex-i-center">
           <img
-            src="../../public/assets/create.png"
+            src="/assets/create.png"
             width={40}
             height={40}
           />
+          <aside className="text-r-base">Create</aside>
         </button>
-        <button>
+        <button className="flex-col flex-i-center">
           <img
             className="font-bold"
-            src="../../public/assets/following.png"
+            src="/assets/following.png"
             width={40}
             height={40}
           />
+          <aside className="text-r-base">Following</aside>
         </button>
       </section>
 
