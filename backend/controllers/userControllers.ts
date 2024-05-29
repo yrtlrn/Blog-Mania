@@ -43,12 +43,12 @@ const loginUser = asyncHandler(
 
     if (await user.checkpassword(password)) {
       createSession(req, user._id, user.username);
+
       if (req.body.remember) {
+        console.log("Remember Ran");
         req.session.cookie.maxAge = 14 * 24 * 3600000; // 2 Weeks
-      } else {
-        //@ts-ignore
-        req.session.cookie.expires = false;
       }
+
       res
         .status(200)
         .json({ message: "User Log In Successful" });
@@ -118,6 +118,8 @@ const registerUser = asyncHandler(
 
     if (newUser) {
       createSession(req, newUser._id, newUser.username);
+      //@ts-ignore
+      req.session.cookie.expires(false);
       res
         .status(201)
         .json({ message: "User created Sucessfully" });
@@ -525,6 +527,15 @@ const removeFromFollowing = asyncHandler(
   }
 );
 
+// DESC    Check if user is authorized
+// ROUTE   GET /api/v1/user/auth-check
+// ACCESS  Private
+const userAuthCheck = asyncHandler(
+  async (req: Request, res: Response) => {
+    res.status(200).json({ message: "User is authorized" });
+  }
+);
+
 export {
   registerUser,
   loginUser,
@@ -540,6 +551,7 @@ export {
   followingList,
   addToFollowing,
   removeFromFollowing,
+  userAuthCheck,
 };
 
 //? Other Functions

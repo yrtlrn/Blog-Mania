@@ -2,12 +2,13 @@
 import { useForm } from "react-hook-form";
 
 // Types Imports
-import { loginPageProps } from "../types/index";
+import { loginPageProps } from "../@types/index";
 
 // Utils Imports
 import { toastMsg } from "../utils/ToastMsg";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api";
+import { useState } from "react";
 
 const LoginPage = () => {
   const {
@@ -16,9 +17,12 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<loginPageProps>();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: loginPageProps) => {
+    setIsLoading(true);
     const validEmail = String(data.email)
       .toLowerCase()
       .match(
@@ -27,15 +31,18 @@ const LoginPage = () => {
 
     if (!validEmail) {
       toastMsg("error", "Please enter a valid email");
+      setIsLoading(false);
       return;
     }
     const res = await loginUser(data);
-     const resBody = await res.json();
-     if (!res.ok) {
-        toastMsg("error", resBody.message)
-     } else {
-      navigate("/")
-     }
+    const resBody = await res.json();
+    if (!res.ok) {
+      toastMsg("error", resBody.message);
+      setIsLoading(false);
+    } else {
+      navigate("/");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,12 +97,34 @@ const LoginPage = () => {
           </span>
         )}
       </label>
-      <button className="btn" type="submit">
-        Log In
+      <div className="flex justify-center gap-2">
+        <input
+          type="checkbox"
+          className="w-5"
+          {...register("remember")}
+        />
+        <p>Remember Me</p>
+      </div>
+      <button className="btn " type="submit">
+        {!isLoading ? (
+          "Log In"
+        ) : (
+          <div className="flex">
+            <div
+              className="inline-block h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+              role="status"
+            ></div>
+            <p>Logging In...</p>
+          </div>
+        )}
       </button>
+
       <span className="text-center text-r-lg">
         Don't have an account?{" "}
-        <Link to="/signup" className="text-blue-800 hover:underline">
+        <Link
+          to="/signup"
+          className="text-blue-800 hover:underline"
+        >
           Create An Account
         </Link>
       </span>

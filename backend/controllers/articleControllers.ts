@@ -12,13 +12,14 @@ import { Types } from "mongoose";
 // ACCESS  Public
 const getAllArticles = asyncHandler(
   async (req: Request, res: Response) => {
-    const page = req.query.page || 1
-    const skip = (page as number - 1) * 10
-    const limit = 10
+    const page = req.query.page || 1;
+    const skip = ((page as number) - 1) * 10;
+    const limit = 10;
 
-    const article = await Article.find({}).select(
-      "-__v -updatedAt"
-    ).skip(skip).limit(limit)
+    const article = await Article.find({})
+      .select("-__v -updatedAt")
+      .skip(skip)
+      .limit(limit);
 
     if (!article) {
       res.status(404);
@@ -119,11 +120,14 @@ const createArticle = asyncHandler(
 );
 
 // DESC    Get specific tag articles
-// ROUTE   GET /api/v1/articles/:tag
+// ROUTE   GET /api/v1/articles//search/tag
 // ACCESS  Public
 const getTagArticles = asyncHandler(
   async (req: Request, res: Response) => {
-    const { tag } = req.query;
+    const page = req.query.page || 1;
+    const skip = ((page as number) - 1) * 10;
+    const limit = 10;
+    const tag = req.query.tag;
     const tagList = [
       "Games",
       "Music",
@@ -138,7 +142,10 @@ const getTagArticles = asyncHandler(
       throw new Error("Invalid Tag");
     }
 
-    const articles = await Article.find({ tag: tag });
+    const articles = await Article.find({ tag: tag })
+      .select("-__v -updatedAt")
+      .skip(skip)
+      .limit(limit);
 
     if (!articles) {
       res.status(404);

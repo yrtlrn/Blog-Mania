@@ -17,10 +17,11 @@ import {
   saveArticleToUser,
   savedArticles,
   settingData,
+  userAuthCheck,
 } from "../controllers/userControllers";
 
 // Utilis Import
-import { authCheck } from "../utils/authCheck";
+import { authCheck } from "../middlewares/authCheck";
 
 // Validators Imports
 import {
@@ -41,6 +42,7 @@ router.post("/login", loginValidator, loginUser);
 
 // Private Routes
 router.post("/logout", authCheck, logoutUser);
+router.get("/auth-check", authCheck, userAuthCheck);
 
 router
   .route("/profile")
@@ -50,9 +52,10 @@ router
 router
   .route("/setting")
   .get(authCheck, settingData)
-  .post(authCheck,editSettingValidator, editSetting);
+  .post(authCheck, editSettingValidator, editSetting);
 
 router.get("/articles", authCheck, savedArticles);
+
 router.post(
   "/article/save",
   authCheck,

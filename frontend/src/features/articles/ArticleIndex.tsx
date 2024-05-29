@@ -1,22 +1,19 @@
 import { useState, useRef, useEffect } from "react";
-import { articleType, getAllArticles } from "./ArticleAPI";
+import {
+  articleType,
+  getAllArticles,
+  getTagArticles,
+} from "./ArticleAPI";
 import ArticleCard from "./ArticleCard";
+import InfiniteScroll from "../../utils/InfiniteScroll";
+import { useParams } from "react-router-dom";
 
 const ArticleIndex = () => {
-  //   const [data, setData] = useState<articleType[]>([]);
   let data = useRef<articleType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const [page, setPage] = useState(1);
-
-  const observer = useRef(
-    new IntersectionObserver((entries) => {
-      const first = entries[0];
-      if (first.isIntersecting) {
-        setPage((no) => no + 1);
-      }
-    })
-  );
+  const { tag } = useParams();
 
   const getArticles = async () => {
     setLoading(true);
@@ -24,39 +21,54 @@ const ArticleIndex = () => {
       String(page),
       setError
     );
+    setLoading(false);
     let allData = new Set([...data.current, ...res.data]);
     data.current = [...allData];
+  };
+
+  const tagArticles = async () => {
+    setLoading(true);
+    const res = await getTagArticles(
+      String(page),
+      tag!,
+      setError
+    );
     setLoading(false);
+
+    let allData = new Set([...data.current, ...res.data]);
+    data.current = [...allData];
+
   };
 
   // Infinite Scroll
   const [lastElement, setLastElement] =
     useState<HTMLDivElement | null>(null);
 
+  InfiniteScroll(setPage, lastElement);
+
   useEffect(() => {
-    getArticles();
+    if (!tag) {
+      getArticles();
+    } else {
+      tagArticles();
+    }
   }, [page]);
 
   useEffect(() => {
-    const currentElement = lastElement;
-    const currentObserver = observer.current;
+    data.current = []
+    
+    tagArticles();
+  }, [tag]);
 
-    if (currentElement) {
-      currentObserver.observe(currentElement);
-    }
-    return () => {
-      if (currentElement) {
-        currentObserver.unobserve(currentElement);
-      }
-    };
-  }, [lastElement]);
+
+
   return (
     <section>
       {error ? (
         <div>{error.message}</div>
       ) : (
         <section>
-          {data.current.map((article) => {
+          {data.current.map((article,index) => {
             return (
               <section key={article.title}>
                 {data.current[data.current.length - 2]

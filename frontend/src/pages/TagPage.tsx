@@ -1,10 +1,10 @@
 import ArticleIndex from "../features/articles/ArticleIndex";
 
-const HomePage = () => {
+const TagPage = () => {
   return (
     <section>
-      <ArticleIndex type={"all"} />
+      <ArticleIndex />
     </section>
   );
 };
-export default HomePage;
+export default TagPage;

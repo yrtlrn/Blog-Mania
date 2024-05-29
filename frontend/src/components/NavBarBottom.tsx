@@ -1,6 +1,6 @@
 const NavBarBottom = () => {
   return (
-    <section className="flex justify-around px-4 py-2 bg-orange-400 ">
+    <section className="flex justify-around px-4 py-2 bg-orange-400 md:px-6 ">
       <button className="flex-col flex-i-center">
         <img
           src="/assets/home.png"

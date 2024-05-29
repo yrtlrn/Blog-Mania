@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 
 // Types Imports
-import { signupPageProps } from "../types/index";
+import { signupPageProps } from "../@types/index";
 
 // Utils Imports
 import { toastMsg } from "../utils/ToastMsg";

@@ -20,7 +20,7 @@ import {
 } from "../middlewares/imageUploadMW";
 
 // Utils Imports
-import { authCheck } from "../utils/authCheck";
+import { authCheck } from "../middlewares/authCheck";
 
 // Validators Imports
 import { articleIdValidator } from "../middlewares/validation/userValidation";

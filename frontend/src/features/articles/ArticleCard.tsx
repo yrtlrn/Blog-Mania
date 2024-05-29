@@ -1,19 +1,14 @@
-// Package Imports
-import { useEffect, useRef, useState } from "react";
-
-// API calls Imports
-import { getAllArticles } from "./ArticleAPI";
-
 // Types Import
 import { articleType } from "./ArticleAPI";
 
 // Utils Imports
 
 
-const ArticleCard = (data: articleType) => {
+const ArticleCard = (data:articleType) => {
+  console.log(data._id)
   return (
     <article
-      key={data.title}
+      key={data._id}
       className="p-2 my-5 border-2 border-black rounded-md"
     >
       {/* Profile Pic, Author Name, Menu Dots */}
@@ -41,6 +36,7 @@ const ArticleCard = (data: articleType) => {
           <a className="hover:text-blue-500">
             {data.title}
           </a>
+          <span> {data.tag}</span>
         </h2>
         <p>{data.content.substring(0, 100)}...</p>
       </section>
