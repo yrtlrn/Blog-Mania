@@ -61,4 +61,20 @@
   .btn {
     @apply w-full p-3 font-semibold bg-orange-300 rounded-lg text-r-3xl hover:bg-orange-400;
   }
+
+  .topNavAnimationEntry {
+    animation: visible 0.2s ease-in-out both;
+  }
+
+
 }
+
+@keyframes visible {
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+

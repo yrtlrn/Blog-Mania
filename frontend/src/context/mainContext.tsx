@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { userAuth } from "../api";
 
 type ContextType = {
@@ -26,6 +26,10 @@ export const MainProvider = ({
       setIsAuth(false)
     }
   };
+
+  useEffect(() => {
+    userAuthFun()
+  }, []);
 
 
   return (

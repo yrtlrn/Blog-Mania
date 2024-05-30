@@ -1,10 +1,87 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import {  useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useMainContext } from "../context/mainContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { logoutUser } from "../api";
+import { toastMsg } from "../utils/ToastMsg";
 
 const NavBarTop = () => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { isAuth } = useMainContext();
+  const { isAuth, userAuthFun } = useMainContext();
+  const navigate = useNavigate();
+
+  // Nav Button Variants
+  const topBarVariants = {
+    open: {
+      rotate: 45,
+      translateY: 2,
+      y: 10,
+    },
+    closed: { rotate: 0, tanslateY: 0 },
+  };
+  const middleBarVariants = {
+    open: { opacity: 0 },
+    closed: { opacity: 1 },
+  };
+  const bottomBarVariants = {
+    open: {
+      rotate: -45,
+      translateY: -2,
+      y: -6,
+    },
+    closed: { rotate: 0, translateY: 0 },
+  };
+
+  // Dropdown Variants
+  const dropdownVariants = {
+    open: {
+      opacity: 1,
+      width: "100%",
+      height: "auto",
+    },
+    closed: {
+      opacity: 0,
+      width: "0%",
+      height: "0%",
+    },
+    exit: {
+      width: "0%",
+      height: "0%",
+      opacity: 0,
+    },
+  };
+
+  const linkVariants = {
+    open: {
+      opacity: 1,
+      transition: {
+        delay: 0.2,
+      },
+    },
+    closed: {
+      opacity: 0,
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        delay: -0.2,
+      },
+    },
+  };
+
+
+  // Logout user function
+  const logoutFun = async () => {
+    const response = await logoutUser();
+    if (!response.ok) {
+      toastMsg("error", "Error Logging Out");
+    } else {
+      toastMsg("success", "Logged Out");
+      userAuthFun();
+      navigate("/");
+    }
+  };
+
   return (
     <nav className="relative flex justify-between px-4 py-2 bg-orange-400 md:px-6">
       <div className="flex-i-center">
@@ -51,93 +128,142 @@ const NavBarTop = () => {
           setShowDropdown((prev) => !prev);
         }}
       >
-        <div className="w-10 h-[6px] bg-black rounded-md"></div>
-        <div className="w-10 h-[6px] bg-black rounded-md"></div>
-        <div className="w-10 h-[6px] bg-black rounded-md"></div>
+        <motion.div
+          animate={showDropdown ? "open" : "closed"}
+          variants={topBarVariants}
+          transition={{ ease: "easeOut", duration: 0.2 }}
+          className="w-10 h-[6px]  bg-black rounded-md"
+        ></motion.div>
+        <motion.div
+          animate={showDropdown ? "open" : "closed"}
+          variants={middleBarVariants}
+          transition={{ ease: "easeOut", duration: 0.2 }}
+          className="w-10 h-[6px]  bg-black rounded-md"
+        ></motion.div>
+        <motion.div
+          animate={showDropdown ? "open" : "closed"}
+          variants={bottomBarVariants}
+          transition={{ ease: "easeOut", duration: 0.2 }}
+          className="w-10 h-[6px]  bg-black rounded-md"
+        ></motion.div>
       </button>
 
       {/* Dropdown Menu */}
-      {showDropdown && (
-        <section className="absolute w-full h-fit grid grid-cols-2 bg-red-300 top-[100%] left-0 text-center py-2">
-          <div className="flex flex-col gap-2">
-            <Link
-              to={"/articles/games"}
-              className="font-semibold text-r-xl hover:underline "
+      <AnimatePresence>
+        {showDropdown && (
+          <motion.section
+            className="absolute w-full h-fit grid grid-cols-2 bg-red-300 top-[100%] right-0 text-center py-2 overflow-hidden"
+            initial="closed"
+            animate="open"
+            exit="exit"
+            variants={dropdownVariants}
+          >
+            <motion.div
+              initial="closed"
+              animate="open"
+              exit="exit"
+              variants={linkVariants}
+              className="flex flex-col gap-2"
             >
-              Games
-            </Link>
-            <Link
-              to={"/articles/movie"}
-              className="font-semibold text-r-xl hover:underline "
+              <Link
+                to={"/articles/games"}
+                className="font-semibold text-r-xl hover:underline "
+                onClick={() => setShowDropdown(false)}
+              >
+                Games
+              </Link>
+              <Link
+                to={"/articles/movie"}
+                className="font-semibold text-r-xl hover:underline "
+                onClick={() => setShowDropdown(false)}
+              >
+                Movie
+              </Link>
+              <Link
+                to={"/articles/music"}
+                className="font-semibold text-r-xl hover:underline "
+                onClick={() => setShowDropdown(false)}
+              >
+                Music
+              </Link>
+              <Link
+                to={"/articles/tech"}
+                className="font-semibold text-r-xl hover:underline "
+                onClick={() => setShowDropdown(false)}
+              >
+                Tech
+              </Link>
+              <Link
+                to={"/articles/cooking"}
+                className="font-semibold text-r-xl hover:underline "
+                onClick={() => setShowDropdown(false)}
+              >
+                Cooking
+              </Link>
+              <Link
+                to={"/articles/other"}
+                className="font-semibold text-r-xl hover:underline "
+                onClick={() => setShowDropdown(false)}
+              >
+                Others
+              </Link>
+            </motion.div>
+            <motion.div
+              className="flex flex-col gap-2"
+              initial="closed"
+              animate="open"
+              exit="exit"
+              variants={linkVariants}
             >
-              Movie
-            </Link>
-            <Link
-              to={"/articles/music"}
-              className="font-semibold text-r-xl hover:underline "
-            >
-              Music
-            </Link>
-            <Link
-              to={"/articles/tech"}
-              className="font-semibold text-r-xl hover:underline "
-            >
-              Tech
-            </Link>
-            <Link
-              to={"/articles/cooking"}
-              className="font-semibold text-r-xl hover:underline "
-            >
-              Cooking
-            </Link>
-            <Link
-              to={"/articles/other"}
-              className="font-semibold text-r-xl hover:underline "
-            >
-              Others
-            </Link>
-          </div>
-          <div className="flex flex-col gap-2">
-            {isAuth ? (
-              <>
-                <Link
-                  to={"#"}
-                  className="font-semibold text-r-xl hover:underline "
-                >
-                  Profile
-                </Link>
-                <Link
-                  to={"#"}
-                  className="font-semibold text-r-xl hover:underline "
-                >
-                  Settings
-                </Link>
-                <Link
-                  to={"#"}
-                  className="font-semibold text-r-xl hover:underline "
-                >
-                  Logoit
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to={"#"}
-                  className="font-semibold text-r-xl hover:underline "
-                >
-                  Login
-                </Link>
-                <Link
-                  to={"#"}
-                  className="font-semibold text-r-xl hover:underline "
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-        </section>
-      )}
+              {isAuth ? (
+                <>
+                  <Link
+                    to={"#"}
+                    className="font-semibold text-r-xl hover:underline"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to={"#"}
+                    className="font-semibold text-r-xl hover:underline "
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Settings
+                  </Link>
+                  <Link
+                    to={"#"}
+                    className="font-semibold text-r-xl hover:underline "
+                    onClick={() => {
+                      setShowDropdown(false);
+                      logoutFun();
+                    }}
+                  >
+                    Logout
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to={"/login"}
+                    className="font-semibold text-r-xl hover:underline "
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to={"/signup"}
+                    className="font-semibold text-r-xl hover:underline "
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </motion.div>
+          </motion.section>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

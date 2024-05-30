@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 
 const ArticleIndex = () => {
   let data = useRef<articleType[]>([]);
+  const firstRender = useRef(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const [page, setPage] = useState(1);
@@ -37,7 +38,6 @@ const ArticleIndex = () => {
 
     let allData = new Set([...data.current, ...res.data]);
     data.current = [...allData];
-
   };
 
   // Infinite Scroll
@@ -55,12 +55,16 @@ const ArticleIndex = () => {
   }, [page]);
 
   useEffect(() => {
-    data.current = []
-    
-    tagArticles();
+    if (tag && firstRender.current === false) {
+      data.current = [];
+
+      tagArticles();
+    }
   }, [tag]);
 
-
+  useEffect(() => {
+    firstRender.current = false;
+  }, []);
 
   return (
     <section>
@@ -68,9 +72,9 @@ const ArticleIndex = () => {
         <div>{error.message}</div>
       ) : (
         <section>
-          {data.current.map((article,index) => {
+          {data.current.map((article, index) => {
             return (
-              <section key={article.title}>
+              <section key={index}>
                 {data.current[data.current.length - 2]
                   .title === article.title ? (
                   <div ref={(elem) => setLastElement(elem)}>

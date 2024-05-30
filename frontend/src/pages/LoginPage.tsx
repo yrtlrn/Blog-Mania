@@ -8,7 +8,8 @@ import { loginPageProps } from "../@types/index";
 import { toastMsg } from "../utils/ToastMsg";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMainContext } from "../context/mainContext";
 
 const LoginPage = () => {
   const {
@@ -18,6 +19,9 @@ const LoginPage = () => {
   } = useForm<loginPageProps>();
 
   const navigate = useNavigate();
+
+  const { userAuthFun, isAuth } = useMainContext();
+  console.log(isAuth)
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,9 +46,17 @@ const LoginPage = () => {
     } else {
       navigate("/");
       setIsLoading(false);
+      userAuthFun();
     }
   };
 
+  useEffect(() => {
+    if (isAuth) {
+      navigate("/");
+    }
+    
+  }, [isAuth]);
+  
   return (
     <form
       className="flex flex-col gap-3 absCenter  w-[80%] md:w-[70%] lg:w-[60%]"
@@ -105,16 +117,18 @@ const LoginPage = () => {
         />
         <p>Remember Me</p>
       </div>
-      <button className="btn " type="submit">
+      <button className="btn " type="submit" disabled={isLoading} >
         {!isLoading ? (
           "Log In"
         ) : (
-          <div className="flex">
+          <div className="flex items-center justify-center">
             <div
               className="inline-block h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
               role="status"
             ></div>
-            <p>Logging In...</p>
+            <p className="font-semibold text-center text-r-2xl">
+              Logging In...
+            </p>
           </div>
         )}
       </button>

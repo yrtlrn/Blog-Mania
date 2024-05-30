@@ -33,4 +33,12 @@ const userAuth = async () => {
   return res;
 };
 
-export { loginUser, signupUser, userAuth };
+const logoutUser = async () => {
+  const res = await fetch(`${apiUrl}/users/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  return res;
+};
+
+export { loginUser, signupUser, userAuth, logoutUser };

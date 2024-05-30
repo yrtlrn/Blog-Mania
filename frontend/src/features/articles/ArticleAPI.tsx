@@ -40,8 +40,10 @@ const getTagArticles = async (
   setError: Function
 ) => {
   const params = new URLSearchParams();
-  
+
+
   params.append("page", page);
+
   params.append(
     "tag",
     tag![0].toUpperCase() + tag?.slice(1)
@@ -56,7 +58,10 @@ const getTagArticles = async (
       if (data.ok) {
         return data.json();
       }
-      setError({name: "Error", message: "Something went wrong"})
+      setError({
+        name: "Error",
+        message: "Something went wrong",
+      });
     })
     .catch((error: Error) => {
       setError(error);

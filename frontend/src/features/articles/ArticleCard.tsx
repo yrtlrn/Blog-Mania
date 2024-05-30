@@ -5,10 +5,8 @@ import { articleType } from "./ArticleAPI";
 
 
 const ArticleCard = (data:articleType) => {
-  console.log(data._id)
   return (
     <article
-      key={data._id}
       className="p-2 my-5 border-2 border-black rounded-md"
     >
       {/* Profile Pic, Author Name, Menu Dots */}
@@ -33,7 +31,7 @@ const ArticleCard = (data:articleType) => {
       {/* Title, Content */}
       <section>
         <h2 className="font-semibold text-r-2xl ">
-          <a className="hover:text-blue-500">
+          <a className="hover:text-orange-500 hover:cursor-pointer">
             {data.title}
           </a>
           <span> {data.tag}</span>

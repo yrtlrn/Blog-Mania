@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 const AuthLayout = () => {
   const { isAuth,userAuthFun } = useMainContext();
   const [timeLeft, setTimeLeft] = useState(5);
+
   
 
   const timer = () => {

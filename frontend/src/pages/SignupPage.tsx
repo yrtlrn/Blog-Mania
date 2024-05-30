@@ -8,6 +8,7 @@ import { signupPageProps } from "../@types/index";
 import { toastMsg } from "../utils/ToastMsg";
 import { Link, useNavigate } from "react-router-dom";
 import { signupUser } from "../api";
+import { useState } from "react";
 
 const SignupPage = () => {
   const {
@@ -18,7 +19,10 @@ const SignupPage = () => {
 
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (data: signupPageProps) => {
+    setIsLoading(true);
     const validEmail = String(data.email)
       .toLowerCase()
       .match(
@@ -27,14 +31,17 @@ const SignupPage = () => {
 
     if (!validEmail) {
       toastMsg("error", "Please enter a valid email");
+      setIsLoading(false);
       return;
     }
     const res = await signupUser(data);
     const resBody = await res.json();
     if (!res.ok) {
       toastMsg("error", resBody.message);
+      setIsLoading(false);
     } else {
       navigate("/");
+      setIsLoading(false);
     }
   };
 
@@ -153,12 +160,27 @@ const SignupPage = () => {
           </span>
         )}
       </label>
+
       <button
-        className="btn w-[80%] md:w-[70%] lg:w-[60%]"
+        className="btn w-[80%] md:w-[70%] lg:w-[60%] "
         type="submit"
+        disabled={isLoading}
       >
-        Sign Up
+        {!isLoading ? (
+          "Log In"
+        ) : (
+          <div className="flex items-center justify-center">
+            <div
+              className="inline-block h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+              role="status"
+            ></div>
+            <p className="font-semibold text-center text-r-2xl">
+              Logging In...
+            </p>
+          </div>
+        )}
       </button>
+
       <span className="text-center text-r-lg">
         Already have an account?{" "}
         <Link
