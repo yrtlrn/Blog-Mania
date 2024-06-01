@@ -84,14 +84,18 @@ const NavBarTop = () => {
 
   return (
     <nav className="relative flex justify-between px-4 py-2 bg-orange-400 md:px-6">
-      <div className="flex-i-center">
-        <img
-          src="/assets/BlogManiaLogo.png"
-          width={40}
-          height={40}
-        />
-        <h1 className="font-bold text-r-xl">Blog Mania</h1>
-      </div>
+      <section>
+        <Link className="flex-i-center" to={"/"}>
+          <img
+            src="/assets/BlogManiaLogo.png"
+            width={40}
+            height={40}
+          />
+          <h1 className="font-bold text-r-xl">
+            Blog Mania
+          </h1>
+        </Link>
+      </section>
 
       <section className="invisible w-[70%] md:visible  flex items-center md:justify-around lg:justify-end lg:gap-10">
         <button className="flex-col flex-i-center">

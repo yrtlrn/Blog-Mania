@@ -4,7 +4,6 @@ const apiUrl = "http://localhost:3000/api/v1";
 const headers = { "Content-Type": "application/json" };
 
 const loginUser = async (data: loginPageProps) => {
-  console.log(data);
   const res = await fetch(`${apiUrl}/users/login`, {
     method: "POST",
     headers: headers,
@@ -40,5 +39,7 @@ const logoutUser = async () => {
   });
   return res;
 };
+
+
 
 export { loginUser, signupUser, userAuth, logoutUser };

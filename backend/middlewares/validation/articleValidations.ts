@@ -77,7 +77,13 @@ const createArticleValidator = [
 
 const commentOnArticleValidator = [
   body("articleId").trim().notEmpty().isString().escape(),
-  body("comment").trim().notEmpty().isString().escape(),
+  body("comment")
+    .trim()
+    .notEmpty()
+    .isString()
+    .isLength({ max: 300 })
+    .withMessage("Max length of 300")
+    .escape(),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

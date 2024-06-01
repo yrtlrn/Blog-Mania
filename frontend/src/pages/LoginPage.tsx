@@ -21,7 +21,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const { userAuthFun, isAuth } = useMainContext();
-  console.log(isAuth)
 
   const [isLoading, setIsLoading] = useState(false);
 

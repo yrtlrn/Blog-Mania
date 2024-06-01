@@ -14,6 +14,8 @@ export type articleType = {
   }>;
 };
 
+const headers = { "Content-Type": "application/json" };
+
 const apiUrl = "http://localhost:3000/api/v1";
 
 const getAllArticles = async (
@@ -40,7 +42,6 @@ const getTagArticles = async (
   setError: Function
 ) => {
   const params = new URLSearchParams();
-
 
   params.append("page", page);
 
@@ -69,4 +70,27 @@ const getTagArticles = async (
     });
 };
 
-export { getAllArticles, getTagArticles };
+const userLikeArticle = async (articleId: string) => {
+  const res = await fetch(`${apiUrl}/articles/like`, {
+    method: "POST",
+    headers: headers,
+    credentials: "include",
+    body: JSON.stringify({ articleId: articleId }),
+  });
+  return res;
+};
+
+const commentArticle = async (articleId: string,content: string) => {
+  const res = await fetch(`${apiUrl}/articles/comment`, {
+    method: "POST",
+    headers: headers,
+    credentials: "include",
+    body: JSON.stringify({
+      articleId: articleId,
+      comment: content
+    })
+  })
+  return res
+}
+
+export { getAllArticles, getTagArticles, userLikeArticle,commentArticle };

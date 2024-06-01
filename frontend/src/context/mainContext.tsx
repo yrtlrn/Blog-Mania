@@ -1,9 +1,14 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+} from "react";
 import { userAuth } from "../api";
 
 type ContextType = {
   isAuth: boolean;
   userAuthFun: () => void;
+  username: string;
 };
 
 const MainContext = React.createContext<ContextType | null>(
@@ -16,24 +21,28 @@ export const MainProvider = ({
   children: React.ReactNode;
 }) => {
   const [isAuth, setIsAuth] = useState(false);
+  const [username, setUsername] = useState("");
 
   const userAuthFun = async () => {
     const isAuth = await userAuth();
 
     if (isAuth.ok) {
       setIsAuth(true);
+      const res = await isAuth.json();
+      setUsername(res.data);
     } else {
-      setIsAuth(false)
+      setIsAuth(false);
     }
   };
 
   useEffect(() => {
-    userAuthFun()
+    userAuthFun();
   }, []);
 
-
   return (
-    <MainContext.Provider value={{ isAuth, userAuthFun }}>
+    <MainContext.Provider
+      value={{ isAuth, userAuthFun, username }}
+    >
       {children}
     </MainContext.Provider>
   );

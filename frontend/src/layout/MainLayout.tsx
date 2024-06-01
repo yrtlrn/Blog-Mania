@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import NavBarBottom from "../components/NavBarBottom";
 import NavBarTop from "../components/NavBarTop";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 
 const MainLayout = () => {

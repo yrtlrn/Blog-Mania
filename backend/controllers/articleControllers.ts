@@ -175,13 +175,13 @@ const likeOrUnlikeArticle = asyncHandler(
       throw new Error("Article not found");
     }
 
-    if (article.likes.includes(req.session.userId)) {
+    if (article.likes.includes(req.session.username!)) {
       const index = article.likes.indexOf(
-        req.session.userId
+        req.session.username!
       );
       article.likes.splice(index, 1);
     } else {
-      article.likes.push(req.session.userId);
+      article.likes.push(req.session.username!);
     }
 
     const savedArticle = article.save();

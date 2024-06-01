@@ -532,7 +532,12 @@ const removeFromFollowing = asyncHandler(
 // ACCESS  Private
 const userAuthCheck = asyncHandler(
   async (req: Request, res: Response) => {
-    res.status(200).json({ message: "User is authorized" });
+    res
+      .status(200)
+      .json({
+        message: "User is authorized",
+        data: req.session.username,
+      });
   }
 );
 
