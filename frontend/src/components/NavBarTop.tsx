@@ -222,14 +222,14 @@ const NavBarTop = () => {
               {isAuth ? (
                 <>
                   <Link
-                    to={"#"}
+                    to={"/user/profile"}
                     className="font-semibold text-r-xl hover:underline"
                     onClick={() => setShowDropdown(false)}
                   >
                     Profile
                   </Link>
                   <Link
-                    to={"#"}
+                    to={"/user/setting"}
                     className="font-semibold text-r-xl hover:underline "
                     onClick={() => setShowDropdown(false)}
                   >

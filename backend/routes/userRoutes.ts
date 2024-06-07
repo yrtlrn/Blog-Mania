@@ -52,7 +52,7 @@ router
 router
   .route("/setting")
   .get(authCheck, settingData)
-  .post(authCheck, editSettingValidator, editSetting);
+  .put(authCheck, editSettingValidator, editSetting);
 
 router.get("/articles", authCheck, savedArticles);
 

@@ -45,8 +45,9 @@ const loginUser = asyncHandler(
       createSession(req, user._id, user.username);
 
       if (req.body.remember) {
-        console.log("Remember Ran");
         req.session.cookie.maxAge = 14 * 24 * 3600000; // 2 Weeks
+      } else {
+        req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 day
       }
 
       res
@@ -151,7 +152,7 @@ const profileData = asyncHandler(
   async (req: Request, res: Response) => {
     const user = await User.findById(
       req.session.userId
-    ).select("firstName lastName email");
+    ).select("firstName lastName email username");
 
     if (!user) {
       res.status(404);
@@ -162,6 +163,7 @@ const profileData = asyncHandler(
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      username: user.username,
     });
   }
 );
@@ -212,7 +214,6 @@ const editProfile = asyncHandler(
       user.email = email;
       user.username = username;
       if (newPassword) {
-        console.log("Password Update");
         await User.findByIdAndUpdate(
           req.session.userId,
           {
@@ -250,7 +251,7 @@ const settingData = asyncHandler(
 );
 
 // DESC    Edit user's settings
-// ROUTE    POST /api/v1/user/setting
+// ROUTE    Put /api/v1/user/setting
 // ACCESS   Private
 const editSetting = asyncHandler(
   async (req: Request, res: Response) => {
@@ -309,8 +310,6 @@ const editSetting = asyncHandler(
       { perferences: req.body },
       { runValidators: true }
     );
-
-    console.log(req.body);
 
     if (updatedUser) {
       res
@@ -532,12 +531,10 @@ const removeFromFollowing = asyncHandler(
 // ACCESS  Private
 const userAuthCheck = asyncHandler(
   async (req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({
-        message: "User is authorized",
-        data: req.session.username,
-      });
+    res.status(200).json({
+      message: "User is authorized",
+      data: req.session.username,
+    });
   }
 );
 

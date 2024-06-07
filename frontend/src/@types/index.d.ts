@@ -1,7 +1,7 @@
 type loginPageProps = {
   email: string;
   password: string;
-  remember?: boolean
+  remember?: boolean;
 };
 
 type signupPageProps = {
@@ -12,6 +12,19 @@ type signupPageProps = {
   password: string;
 };
 
+type profilePageProps = {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+};
 
 
-export type { loginPageProps, signupPageProps };
+
+export type {
+  loginPageProps,
+  signupPageProps,
+  profilePageProps,
+};

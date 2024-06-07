@@ -167,7 +167,7 @@ const SignupPage = () => {
         disabled={isLoading}
       >
         {!isLoading ? (
-          "Log In"
+          "Sign up"
         ) : (
           <div className="flex items-center justify-center">
             <div
@@ -175,7 +175,7 @@ const SignupPage = () => {
               role="status"
             ></div>
             <p className="font-semibold text-center text-r-2xl">
-              Logging In...
+              Signing Up...
             </p>
           </div>
         )}

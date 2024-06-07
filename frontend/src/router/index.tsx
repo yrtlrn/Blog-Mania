@@ -13,8 +13,9 @@ import AuthLayout from "../layout/AuthLayout";
 import App from "../app/App";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
-import AuthTest from "../pages/AuthTest";
 import TagPage from "../pages/TagPage";
+import ProfilePage from "../pages/ProfilePage";
+import SettingPage from "../pages/SettingPage";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,8 +27,10 @@ export const router = createBrowserRouter(
       <Route path="/signup" element={<SignupPage />} />
 
       {/* Private Routes */}
-      <Route path="/" element={<AuthLayout />}>
-        <Route path="/test" element={<AuthTest />} />
+      <Route path="/user" element={<AuthLayout />}>
+        <Route path="/user/profile" element={<ProfilePage />} />
+        <Route path="/user/setting" element={<SettingPage />} />
+
       </Route>
     </Route>
   )

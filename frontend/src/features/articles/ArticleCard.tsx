@@ -7,8 +7,7 @@ import {
   commentArticle,
   userLikeArticle,
 } from "./ArticleAPI";
-
-
+import { settingData } from "../../api";
 
 const ArticleCard = (data: articleType) => {
   const { isAuth, username } = useMainContext();
@@ -16,6 +15,7 @@ const ArticleCard = (data: articleType) => {
   // Likes
   const likeModified = useRef<string[]>();
   const [likesNumber, setlikesNumber] = useState(0);
+  const [contentDisplay, setContentDisplay] = useState();
 
   // Comments
   const [showComments, setShowComments] = useState(false);
@@ -39,7 +39,6 @@ const ArticleCard = (data: articleType) => {
       return;
     } else {
       if (data.likes.includes(username)) {
-        toastMsg("success", "Artilce Disliked");
         if (likeButton && likeModified.current) {
           likeButton.innerText = "Like";
           const index =
@@ -49,7 +48,6 @@ const ArticleCard = (data: articleType) => {
           setlikesNumber((prev) => prev - 1);
         }
       } else {
-        toastMsg("success", "Artilce Liked");
         if (likeButton) {
           likeButton.innerText = "Dislike";
           likeModified.current!.push(username);
@@ -78,11 +76,19 @@ const ArticleCard = (data: articleType) => {
         commentModified.current.push({
           username: username,
           content: comment,
-          date: ""
+          date: "",
         });
         setCommentsNumber((prev) => prev + 1);
       }
       return;
+    }
+  };
+
+  const getSettingData = async () => {
+    if (isAuth) {
+      const response = await settingData();
+      const resBody = await response.json();
+      setContentDisplay(resBody.data.contentDisplay);
     }
   };
 
@@ -91,10 +97,18 @@ const ArticleCard = (data: articleType) => {
     commentModified.current = data.comments;
     setlikesNumber(data.likes.length);
     setCommentsNumber(data.comments.length);
+
+    getSettingData();
   }, []);
 
   return (
-    <article className="p-2 my-5 border-2 border-black rounded-md">
+    <article
+      className={`p-2 my-5 border-2 border-black rounded-md ${
+        contentDisplay === "center" && "text-center"
+      } ${contentDisplay === "right" && "text-right"} ${
+        contentDisplay === "left" && "text-left"
+      }`}
+    >
       {/* Profile Pic, Author Name, Menu Dots */}
       <section className="flex flex-row items-center justify-between my-2">
         <div className="flex flex-row items-center">
@@ -129,7 +143,13 @@ const ArticleCard = (data: articleType) => {
       </section>
 
       {/* Likes & Comments */}
-      <section className="flex gap-5 my-3">
+      <section
+        className={`flex gap-5 my-3 ${
+          contentDisplay === "left" && "justify-start"
+        } ${
+          contentDisplay === "center" && "justify-center"
+        } ${contentDisplay === "right" && "justify-end"}`}
+      >
         <div>
           {likesNumber}
           <button

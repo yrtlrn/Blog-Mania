@@ -114,9 +114,7 @@ const editProfileValidator = [
     .isLength({ min: 6 })
     .escape(),
   body("newPassword")
-    .trim()
-    .notEmpty()
-    .withMessage("Password is required")
+    .optional({ values: "falsy" })
     .isLength({ min: 6 })
     .escape(),
   (req: Request, res: Response, next: NextFunction) => {
@@ -137,6 +135,7 @@ const editSettingValidator = [
   body("contentDisplay")
     .trim()
     .notEmpty()
+    .toLowerCase()
     .isIn(["left", "right", "center"])
     .isString()
     .escape(),
