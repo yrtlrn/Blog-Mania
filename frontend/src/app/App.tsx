@@ -1,10 +1,10 @@
 // Page Imports
-import HomePage from "../pages/HomePage";
+import ArticleIndex from "../features/articles/ArticleIndex";
 
 function App() {
   return (
     <>
-      <HomePage />
+      <ArticleIndex />
     </>
   );
 }

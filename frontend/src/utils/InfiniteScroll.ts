@@ -4,6 +4,7 @@ const InfiniteScroll = (
   setPage: Function,
   lastElement: HTMLDivElement | null
 ) => {
+  console.log("Infinte Scroll Ran")
   const observer = useRef(
     new IntersectionObserver((entries) => {
       const first = entries[0];

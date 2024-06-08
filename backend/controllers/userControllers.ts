@@ -8,6 +8,7 @@ import User from "../models/userModel";
 
 // Utils Imports
 import { createSession } from "../utils/createSession";
+import Article from "../models/articleModel";
 
 // todo - when frontend is built, check if session expires on window close
 // DESC     Login in user
@@ -145,8 +146,8 @@ const logoutUser = asyncHandler(
 );
 
 // DESC     Send user's profile data
-// ROUTE    GET /api/v1/user/profile
-// ROUTE    GET /api/v1/user/profile
+// ROUTE    GET /api/v1/users/profile
+// ROUTE    GET /api/v1/users/profile
 // ACCESS   Private
 const profileData = asyncHandler(
   async (req: Request, res: Response) => {
@@ -169,7 +170,7 @@ const profileData = asyncHandler(
 );
 
 // DESC     Update user's profile data
-// ROUTE    PUT /api/v1/user/profile
+// ROUTE    PUT /api/v1/users/profile
 // ACCESS   Private
 const editProfile = asyncHandler(
   async (req: Request, res: Response) => {
@@ -240,7 +241,7 @@ const editProfile = asyncHandler(
 );
 
 // DESC     Get user's settings
-// ROUTE    GET /api/v1/user/setting
+// ROUTE    GET /api/v1/users/setting
 // ACCESS   Private
 const settingData = asyncHandler(
   async (req: Request, res: Response) => {
@@ -251,7 +252,7 @@ const settingData = asyncHandler(
 );
 
 // DESC    Edit user's settings
-// ROUTE    Put /api/v1/user/setting
+// ROUTE    Put /api/v1/users/setting
 // ACCESS   Private
 const editSetting = asyncHandler(
   async (req: Request, res: Response) => {
@@ -324,18 +325,32 @@ const editSetting = asyncHandler(
 );
 
 // DESC     Get user's saved articles
-// ROUTE    GET /api/v1/user/articles
+// ROUTE    GET /api/v1/users/articles
 // ACCESS   Private
 const savedArticles = asyncHandler(
   async (req: Request, res: Response) => {
+    const page = req.query.page || 1;
+    const skip = ((page as number) - 1) * 10;
     const user = await userCheck(req, res);
 
-    res.status(200).json({ data: user.savedArticles });
+    const articles = await Article.find({
+      _id: { $in: user.savedArticles },
+    })
+      .select("-__v -updatedAt")
+      .skip(skip)
+      .limit(10);
+
+    if (!articles) {
+      res.status(404);
+      throw new Error("Articles not found");
+    } else {
+      res.status(200).json({ data: articles });
+    }
   }
 );
 
 // DESC     Save an article
-// ROUTE    POST /api/v1/user/article/save
+// ROUTE    POST /api/v1/users/article/save
 // ACCESS   Private
 const saveArticleToUser = asyncHandler(
   async (req: Request, res: Response) => {
@@ -362,7 +377,7 @@ const saveArticleToUser = asyncHandler(
 );
 
 // DESC     Remove an article
-// ROUTE    DELETE /api/v1/user/article/delete
+// ROUTE    DELETE /api/v1/users/article/delete
 // ACCESS   Private
 const removeArticle = asyncHandler(
   async (req: Request, res: Response) => {
@@ -398,7 +413,7 @@ const removeArticle = asyncHandler(
 );
 
 // DESC     Get user's follwers list
-// ROUTE    DELETE /api/v1/user/followers
+// ROUTE    DELETE /api/v1/users/followers
 // ACCESS   Private
 const followersList = asyncHandler(
   async (req: Request, res: Response) => {
@@ -408,7 +423,7 @@ const followersList = asyncHandler(
 );
 
 // DESC     Get user's following list
-// ROUTE    DELETE /api/v1/user/following
+// ROUTE    DELETE /api/v1/users/following
 // ACCESS   Private
 const followingList = asyncHandler(
   async (req: Request, res: Response) => {
@@ -419,29 +434,31 @@ const followingList = asyncHandler(
 );
 
 // DESC    Add to User's Following List
-// ROUTE   POST /api/v1/user/following/add
+// ROUTE   POST /api/v1/users/following/add
 // ACCESS  Private
 const addToFollowing = asyncHandler(
   async (req: Request, res: Response) => {
     const user = await userCheck(req, res);
-    if (!req.body.userId) {
+    if (!req.body.author) {
       res.status(400);
-      throw new Error("Following User's Id not found");
+      throw new Error("Author not provided");
     }
 
-    const followUser = await User.findById(req.body.userId);
+    const followUser = await User.findOne({
+      username: req.body.author,
+    });
 
     if (!followUser) {
       res.status(404);
       throw new Error("Follow User does not exist");
     }
 
-    if (user.following.includes(req.body.userId)) {
+    if (user.following.includes(followUser.username)) {
       res.status(400);
       throw new Error("Already following");
     }
 
-    user.following.push(req.body.userId);
+    user.following.push(followUser.username);
 
     const updatedUser = await user.save();
 
@@ -452,9 +469,11 @@ const addToFollowing = asyncHandler(
 
     if (updatedUser) {
       if (
-        !followUser.followers.includes(req.session.userId!)
+        !followUser.followers.includes(
+          req.session.username!
+        )
       ) {
-        followUser.followers.push(req.session.userId!);
+        followUser.followers.push(req.session.username!);
         const followUserSave = await followUser.save();
         if (followUserSave) {
           res.status(200).json({
@@ -474,30 +493,38 @@ const addToFollowing = asyncHandler(
 );
 
 // DESC    Unfollow another user
-// ROUTE   POST /api/v1/user/following/remove
+// ROUTE   POST /api/v1/users/following/remove
 // ACCESS  Private
 const removeFromFollowing = asyncHandler(
   async (req: Request, res: Response) => {
     const user = await userCheck(req, res);
-    const followUser = await User.findById(req.body.userId);
+    if (!req.body.author) {
+      res.status(400);
+      throw new Error("Author not provided");
+    }
+    const followUser = await User.findOne({
+      username: req.body.author,
+    });
     if (!followUser) {
       res.status(404);
       throw new Error("Follow User does not exist");
     }
 
-    if (!user.following.includes(req.body.userId)) {
+    if (!user.following.includes(followUser.username)) {
       res.status(400);
       throw new Error("Not following this user");
     }
 
     if (
-      !followUser.followers.includes(req.session.userId!)
+      !followUser.followers.includes(req.session.username!)
     ) {
       res.status(400);
       throw new Error("You do not follow this user");
     }
 
-    const index = user.following.indexOf(req.body.userId);
+    const index = user.following.indexOf(
+      followUser.username
+    );
 
     user.following.splice(index, 1);
 
@@ -505,7 +532,7 @@ const removeFromFollowing = asyncHandler(
 
     if (userSaved) {
       const followUserIndex = followUser.followers.indexOf(
-        req.session.userId!
+        req.session.username!
       );
       followUser.followers.splice(followUserIndex, 1);
 
@@ -527,7 +554,7 @@ const removeFromFollowing = asyncHandler(
 );
 
 // DESC    Check if user is authorized
-// ROUTE   GET /api/v1/user/auth-check
+// ROUTE   GET /api/v1/users/auth-check
 // ACCESS  Private
 const userAuthCheck = asyncHandler(
   async (req: Request, res: Response) => {

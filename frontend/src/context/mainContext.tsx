@@ -3,12 +3,13 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { userAuth } from "../api";
+import { settingData, userAuth } from "../api";
 
 type ContextType = {
   isAuth: boolean;
   userAuthFun: () => void;
   username: string;
+  contentDisplay: string;
 };
 
 const MainContext = React.createContext<ContextType | null>(
@@ -22,26 +23,47 @@ export const MainProvider = ({
 }) => {
   const [isAuth, setIsAuth] = useState(false);
   const [username, setUsername] = useState("");
+  const [contentDisplay, setContentDisplay] =
+    useState("left");
 
   const userAuthFun = async () => {
-    const isAuth = await userAuth();
+    const response = await userAuth();
+    const resBody = await response.json();
 
-    if (isAuth.ok) {
-      setIsAuth(true);
-      const res = await isAuth.json();
-      setUsername(res.data);
-    } else {
+    if (!response.ok) {
       setIsAuth(false);
+      console.log("Response Error");
+    } else {
+      setIsAuth(true);
+      setUsername(resBody.data);
     }
+  };
+
+  const getSettingData = async () => {
+    const response = await settingData();
+    const resBody = await response.json();
+    setContentDisplay(resBody.data.contentDisplay);
+    return;
   };
 
   useEffect(() => {
     userAuthFun();
   }, []);
 
+  useEffect(() => {
+    if (isAuth) {
+      getSettingData()
+    }
+  }, [isAuth]);
+
   return (
     <MainContext.Provider
-      value={{ isAuth, userAuthFun, username }}
+      value={{
+        isAuth,
+        userAuthFun,
+        username,
+        contentDisplay,
+      }}
     >
       {children}
     </MainContext.Provider>

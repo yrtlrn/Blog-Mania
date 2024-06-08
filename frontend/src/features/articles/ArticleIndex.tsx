@@ -5,8 +5,8 @@ import {
   getTagArticles,
 } from "./ArticleAPI";
 import ArticleCard from "./ArticleCard";
-import InfiniteScroll from "../../utils/InfiniteScroll";
 import { useParams } from "react-router-dom";
+import { getFollowingList } from "../users/@UsersAPI";
 
 const ArticleIndex = () => {
   let data = useRef<articleType[]>([]);
@@ -15,6 +15,7 @@ const ArticleIndex = () => {
   const [error, setError] = useState<Error>();
   const [page, setPage] = useState(1);
   const { tag } = useParams();
+  const [following, setFollowing] = useState<string[]>([]);
 
   const getArticles = async () => {
     setLoading(true);
@@ -40,12 +41,40 @@ const ArticleIndex = () => {
     data.current = [...allData];
   };
 
+  const followingList = async () => {
+    const response = await getFollowingList();
+    const resBody = await response.json();
+    setFollowing(resBody.data)
+  };
+
   // Infinite Scroll
   const [lastElement, setLastElement] =
     useState<HTMLDivElement | null>(null);
 
-  InfiniteScroll(setPage, lastElement);
+  const observer = useRef(
+    new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting) {
+        setPage((no: number) => no + 1);
+      }
+    })
+  );
 
+  useEffect(() => {
+    const currentElement = lastElement;
+    const currentObserver = observer.current;
+
+    if (currentElement) {
+      currentObserver.observe(currentElement);
+    }
+    return () => {
+      if (currentElement) {
+        currentObserver.unobserve(currentElement);
+      }
+    };
+  }, [lastElement]);
+
+  // UseEffects
   useEffect(() => {
     if (!tag) {
       getArticles();
@@ -64,6 +93,7 @@ const ArticleIndex = () => {
 
   useEffect(() => {
     firstRender.current = false;
+    followingList();
   }, []);
 
   return (
@@ -81,7 +111,7 @@ const ArticleIndex = () => {
                     {" "}
                   </div>
                 ) : null}
-                <ArticleCard {...article} />
+                <ArticleCard data={article} followingList={following}  />
               </section>
             );
           })}

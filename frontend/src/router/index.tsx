@@ -16,6 +16,8 @@ import SignupPage from "../pages/SignupPage";
 import TagPage from "../pages/TagPage";
 import ProfilePage from "../pages/ProfilePage";
 import SettingPage from "../pages/SettingPage";
+import SavedArticlesPage from "../pages/SavedArticlesPage";
+import FollowersListPage from "../features/users/FollowersListPage";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,9 +30,22 @@ export const router = createBrowserRouter(
 
       {/* Private Routes */}
       <Route path="/user" element={<AuthLayout />}>
-        <Route path="/user/profile" element={<ProfilePage />} />
-        <Route path="/user/setting" element={<SettingPage />} />
-
+        <Route
+          path="/user/profile"
+          element={<ProfilePage />}
+        />
+        <Route
+          path="/user/setting"
+          element={<SettingPage />}
+        />
+        <Route
+          path="/user/savedArticles"
+          element={<SavedArticlesPage />}
+        />
+        <Route
+          path="/user/followers"
+          element={<FollowersListPage />}
+        />
       </Route>
     </Route>
   )

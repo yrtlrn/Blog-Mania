@@ -13,8 +13,8 @@ type userSchemaType = {
     hideFollowers: boolean;
     hideFollowing: boolean;
   };
-  following: Array<Types.ObjectId>;
-  followers: Array<Types.ObjectId>;
+  following: Array<string>;
+  followers: Array<string>;
   savedArticles: Array<Types.ObjectId>;
   checkpassword: (password: string) => boolean;
 };
@@ -66,11 +66,11 @@ const userSchema = new mongoose.Schema<userSchemaType>({
     },
   },
   following: {
-    type: [Types.ObjectId],
+    type: [String],
     default: [],
   },
   followers: {
-    type: [Types.ObjectId],
+    type: [String],
     default: [],
   },
   savedArticles: {

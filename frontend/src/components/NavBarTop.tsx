@@ -222,6 +222,13 @@ const NavBarTop = () => {
               {isAuth ? (
                 <>
                   <Link
+                    to={"/user/savedArticles"}
+                    className="font-semibold text-r-xl hover:underline"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Saved Articles
+                  </Link>
+                  <Link
                     to={"/user/profile"}
                     className="font-semibold text-r-xl hover:underline"
                     onClick={() => setShowDropdown(false)}

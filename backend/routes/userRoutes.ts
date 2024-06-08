@@ -30,7 +30,7 @@ import {
   editProfileValidator,
   editSettingValidator,
   articleIdValidator,
-  userIdValidator,
+  authorValidator,
 } from "../middlewares/validation/userValidation";
 
 const router = express.Router();
@@ -75,13 +75,13 @@ router.get("/following", authCheck, followingList);
 router.post(
   "/following/add",
   authCheck,
-  userIdValidator,
+  authorValidator,
   addToFollowing
 );
-router.post(
+router.delete(
   "/following/remove",
   authCheck,
-  userIdValidator,
+  authorValidator,
   removeFromFollowing
 );
 

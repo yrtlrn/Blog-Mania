@@ -80,17 +80,54 @@ const userLikeArticle = async (articleId: string) => {
   return res;
 };
 
-const commentArticle = async (articleId: string,content: string) => {
+const commentArticle = async (
+  articleId: string,
+  content: string
+) => {
   const res = await fetch(`${apiUrl}/articles/comment`, {
     method: "POST",
     headers: headers,
     credentials: "include",
     body: JSON.stringify({
       articleId: articleId,
-      comment: content
-    })
-  })
-  return res
-}
+      comment: content,
+    }),
+  });
+  return res;
+};
 
-export { getAllArticles, getTagArticles, userLikeArticle,commentArticle };
+const followAUser = async (author: string) => {
+  const res = await fetch(`${apiUrl}/users/following/add`, {
+    method: "POST",
+    headers: headers,
+    credentials: "include",
+    body: JSON.stringify({
+      author,
+    }),
+  });
+  return res;
+};
+
+const unfollowAUser = async (author: string) => {
+  const res = await fetch(
+    `${apiUrl}/users/following/remove`,
+    {
+      method: "DELETE",
+      headers: headers,
+      credentials: "include",
+      body: JSON.stringify({
+        author,
+      }),
+    }
+  );
+  return res;
+};
+
+export {
+  getAllArticles,
+  getTagArticles,
+  userLikeArticle,
+  commentArticle,
+  followAUser,
+  unfollowAUser,
+};

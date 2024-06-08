@@ -3,10 +3,8 @@ import { useMainContext } from "../context/mainContext";
 import { useEffect, useState } from "react";
 
 const AuthLayout = () => {
-  const { isAuth,userAuthFun } = useMainContext();
+  const { isAuth, userAuthFun } = useMainContext();
   const [timeLeft, setTimeLeft] = useState(5);
-
-  
 
   const timer = () => {
     const countdown = setInterval(function () {

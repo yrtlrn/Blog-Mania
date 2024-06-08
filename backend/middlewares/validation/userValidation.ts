@@ -184,8 +184,8 @@ const articleIdValidator = [
     next();
   },
 ];
-const userIdValidator = [
-  body("userId").trim().notEmpty().isString().escape(),
+const authorValidator = [
+  body("author").trim().notEmpty().isString().escape(),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -206,5 +206,5 @@ export {
   editProfileValidator,
   editSettingValidator,
   articleIdValidator,
-  userIdValidator,
+  authorValidator,
 };

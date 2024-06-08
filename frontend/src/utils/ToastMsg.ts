@@ -1,6 +1,9 @@
 import { toast } from "react-toastify";
 
-export const toastMsg = (type: string, message: string) => {
+export const toastMsg = (
+  type: "error" | "success" | "info",
+  message: string
+) => {
   switch (type) {
     case "error":
       toast(message, { type: "error" });

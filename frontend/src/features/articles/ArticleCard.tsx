@@ -1,21 +1,41 @@
 // Types Import
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useMainContext } from "../../context/mainContext";
 import { toastMsg } from "../../utils/ToastMsg";
 import {
   articleType,
   commentArticle,
+  followAUser,
+  unfollowAUser,
   userLikeArticle,
 } from "./ArticleAPI";
-import { settingData } from "../../api";
 
-const ArticleCard = (data: articleType) => {
+import ThreeDotsDropdown from "./ThreeDotsDropdown";
+import { motion } from "framer-motion";
+
+const ArticleCard = ({
+  data,
+  followingList,
+}: {
+  data: articleType;
+  followingList: string[];
+}) => {
   const { isAuth, username } = useMainContext();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLButtonElement>(null);
+  const [followingUser, setFollowingUser] = useState<
+    string[]
+  >([]);
 
   // Likes
   const likeModified = useRef<string[]>();
   const [likesNumber, setlikesNumber] = useState(0);
-  const [contentDisplay, setContentDisplay] = useState();
+  const { contentDisplay } = useMainContext();
 
   // Comments
   const [showComments, setShowComments] = useState(false);
@@ -26,6 +46,7 @@ const ArticleCard = (data: articleType) => {
     >();
   const [commentsNumber, setCommentsNumber] = useState(0);
 
+  // Functions
   const likeOrDislikeArticle = async () => {
     if (!isAuth) {
       toastMsg("error", "Login Required");
@@ -62,6 +83,12 @@ const ArticleCard = (data: articleType) => {
       toastMsg("error", "Login Required");
       return;
     }
+
+    if (!comment) {
+      toastMsg("error", "Comment is empty");
+      return;
+    }
+
     const response = await commentArticle(
       data._id,
       comment
@@ -84,22 +111,88 @@ const ArticleCard = (data: articleType) => {
     }
   };
 
-  const getSettingData = async () => {
-    if (isAuth) {
-      const response = await settingData();
-      const resBody = await response.json();
-      setContentDisplay(resBody.data.contentDisplay);
+  // Close Three Dots Menu when clicked outside
+  const closeMenu = useCallback(
+    (e: { target: any }) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        e.target !==
+          document.getElementById(
+            `${data.title}ThreeDotsDropdown`
+          )
+      ) {
+        setMenuOpen(false);
+      }
+    },
+    [menuOpen]
+  );
+
+  // Follow & Unfollow User
+  const followUser = async () => {
+    if (!isAuth) {
+      toastMsg("error", "Login Required");
+      return;
+    }
+    const response = await followAUser(data.author);
+    const resBody = await response.json();
+    if (!response.ok) {
+      toastMsg("error", resBody.message);
+      return;
+    } else {
+      toastMsg("success", `Follwing ${data.author}`);
+      return;
     }
   };
 
+  const unfollowUser = async () => {
+    if (!isAuth) {
+      toastMsg("error", "Login Required");
+      return;
+    }
+
+    const response = await unfollowAUser(data.author);
+    const resBody = await response.json();
+    if (!response.ok) {
+      toastMsg("error", resBody.message);
+      return;
+    } else {
+      toastMsg("success", `Unfollowed ${data.author}`);
+
+      return;
+    }
+  };
+
+  const followOrUnfollow = () => {
+    const elem = document.getElementById(
+      "followOrUnfollowBtn"
+    );
+    if (elem) {
+      if (elem.innerText === "Follow") {
+        followUser();
+        elem.innerText = "Unfollow";
+      } else {
+        unfollowUser();
+        elem.innerText = "Follow";
+      }
+    }
+  };
+
+  // UseEffects
   useEffect(() => {
     likeModified.current = data.likes;
     commentModified.current = data.comments;
     setlikesNumber(data.likes.length);
     setCommentsNumber(data.comments.length);
-
-    getSettingData();
   }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", closeMenu);
+  }, [closeMenu]);
+
+  useEffect(() => {
+    setFollowingUser(followingList);
+  }, [followingList]);
 
   return (
     <article
@@ -111,21 +204,44 @@ const ArticleCard = (data: articleType) => {
     >
       {/* Profile Pic, Author Name, Menu Dots */}
       <section className="flex flex-row items-center justify-between my-2">
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-slate-300">
             <a className="flex items-center justify-center h-full ">
               P
             </a>
           </div>
-          <h2 className="ml-2">{data.author}</h2>
+          <h2 className="ml-2 text-r-lg">{data.author}</h2>
+          {data.author !== username && (
+            <button
+              className="px-2 border-2 border-black rounded-md hover:cursor-pointer text-r-md"
+              onClick={() => followOrUnfollow()}
+              id="followOrUnfollowBtn"
+            >
+              {followingUser.includes(data.author)
+                ? "Unfollow"
+                : "Follow"}
+            </button>
+          )}
         </div>
-        <button className="">
-          <img
+        <div className="relative">
+          <motion.img
+            whileHover={{ scale: 1.2 }}
             src="/assets/menu-dots.png"
             width={30}
             height={30}
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="hover:cursor-pointer"
+            id={`${data.title}ThreeDotsDropdown`}
           />
-        </button>
+          {menuOpen && (
+            <div className="absolute top-[100%] right-0">
+              <ThreeDotsDropdown
+                articleId={data._id}
+                menuRef={menuRef}
+              />
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Title, Content */}
@@ -134,10 +250,9 @@ const ArticleCard = (data: articleType) => {
           <a className="hover:text-orange-500 hover:cursor-pointer">
             {data!.title}
           </a>
-          <span> {data!.tag}</span>
         </h2>
         <p>
-          {data!.content.substring(0, 100)}
+          {data?.content.substring(0, 100)}
           ...
         </p>
       </section>
@@ -154,7 +269,7 @@ const ArticleCard = (data: articleType) => {
           {likesNumber}
           <button
             id="likeBtn"
-            className="w-20 mx-2 font-semibold text-white bg-orange-400 border-2 border-black rounded-lg hover:cursor-pointer hover:bg-orange-500"
+            className="btn"
             onClick={() => likeOrDislikeArticle()}
           >
             {likeModified.current
@@ -168,7 +283,7 @@ const ArticleCard = (data: articleType) => {
         <div>
           {commentsNumber}
           <button
-            className="w-24 mx-2 font-semibold text-white bg-orange-400 border-2 border-black rounded-lg hover:cursor-pointer hover:bg-orange-500"
+            className="btn "
             onClick={() => {
               setShowComments((prev) => !prev);
             }}
@@ -188,7 +303,7 @@ const ArticleCard = (data: articleType) => {
             onChange={(e) => setComment(e.target.value)}
           />
           <button
-            className="w-24 my-2 font-semibold text-white bg-orange-400 border-2 border-black rounded-lg hover:cursor-pointer hover:bg-orange-500"
+            className="btn"
             onClick={() => commentOnArticle()}
           >
             Comment

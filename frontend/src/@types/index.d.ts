@@ -21,6 +21,13 @@ type profilePageProps = {
   newPassword: string;
 };
 
+type UserProps = {
+  username: string;
+  following: [];
+  followers: [];
+};
+
+
 
 
 export type {

@@ -90,6 +90,49 @@ const editSettingData = async (
   return res;
 };
 
+const saveArticle = async (articleId: string) => {
+  const res = await fetch(`${apiUrl}/users/article/save`, {
+    method: "POST",
+    headers: headers,
+    credentials: "include",
+    body: JSON.stringify({
+      articleId: articleId,
+    }),
+  });
+  return res;
+};
+
+const getSavedArticles = async (page: string) => {
+  const params = new URLSearchParams();
+  params.append("page", page);
+  return await fetch(`${apiUrl}/users/articles?${params}`, {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((data) => {
+      return data.json();
+    })
+    .catch((error: Error) => {
+      console.log(error);
+      return;
+    });
+};
+
+const removeSavedArticle = async (articleId: string) => {
+  const res = await fetch(
+    `${apiUrl}/users/article/remove`,
+    {
+      method: "DELETE",
+      headers: headers,
+      credentials: "include",
+      body: JSON.stringify({
+        articleId: articleId,
+      }),
+    }
+  );
+  return res;
+};
+
 export {
   loginUser,
   signupUser,
@@ -99,4 +142,7 @@ export {
   editProfile,
   settingData,
   editSettingData,
+  saveArticle,
+  getSavedArticles,
+  removeSavedArticle,
 };
