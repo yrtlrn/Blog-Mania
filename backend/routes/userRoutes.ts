@@ -1,6 +1,9 @@
 // Package Imports
-import express from "express";
-
+import express, {
+  NextFunction,
+  Request,
+  Response,
+} from "express";
 // Controllers Imports
 import {
   addToFollowing,
@@ -10,7 +13,7 @@ import {
   followingList,
   loginUser,
   logoutUser,
-  profileData,
+  accountData,
   registerUser,
   removeArticle,
   removeFromFollowing,
@@ -18,6 +21,7 @@ import {
   savedArticles,
   settingData,
   userAuthCheck,
+  profileData,
 } from "../controllers/userControllers";
 
 // Utilis Import
@@ -31,22 +35,34 @@ import {
   editSettingValidator,
   articleIdValidator,
   authorValidator,
+  profileDataValidator,
 } from "../middlewares/validation/userValidation";
+import {
+  uploadPhoto,
+  resizeAndUploadImage,
+} from "../middlewares/imageUploadMW";
 
 const router = express.Router();
 
 // Public Routes
-router.post("/register", registerValidator, registerUser);
+router.post(
+  "/register",
+  uploadPhoto.single("profilePic"),
+  resizeAndUploadImage,
+  registerValidator,
+  registerUser
+);
 // todo - when frontend is built, check if session expires on window close
 router.post("/login", loginValidator, loginUser);
+router.get("/profile", profileDataValidator, profileData);
 
 // Private Routes
 router.post("/logout", authCheck, logoutUser);
 router.get("/auth-check", authCheck, userAuthCheck);
 
 router
-  .route("/profile")
-  .get(authCheck, profileData)
+  .route("/account")
+  .get(authCheck, accountData)
   .put(authCheck, editProfileValidator, editProfile);
 
 router

@@ -39,8 +39,13 @@ const resizeAndUploadImage = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("Step 1")
+  console.log(req.body)
   if (!req.files || req.files.length === 0) return next();
+  console.log("Step 2")
   try {
+    console.log(req.files)
+    console.log('Reseize')
     //@ts-ignore
     const uploadPromises = req.files.map(
       (file: Express.Multer.File) =>
@@ -49,10 +54,11 @@ const resizeAndUploadImage = async (
     const results = (await Promise.all(uploadPromises)) as [
       { url: string }
     ];
-    
     req.imageUrls = results.map((result) => result.url);
+    
     next();
   } catch (error) {
+    console.log("error Occured in reseize and upload")
     next(error);
   }
 };

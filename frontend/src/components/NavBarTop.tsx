@@ -78,6 +78,7 @@ const NavBarTop = () => {
     } else {
       toastMsg("success", "Logged Out");
       userAuthFun();
+      navigate(0)
       navigate("/");
     }
   };

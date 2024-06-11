@@ -16,4 +16,18 @@ const getFollowersList = async () => {
   return res;
 };
 
-export { getFollowersList, getFollowingList };
+const getProfileData = async (username: string) => {
+  const params = new URLSearchParams();
+  params.append("username", username);
+  const res = await fetch(`${apiUrl}/profile?${params}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  return res;
+};
+
+export {
+  getFollowersList,
+  getFollowingList,
+  getProfileData,
+};

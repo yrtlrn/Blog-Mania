@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import {
+  body,
+  query,
+  validationResult,
+  check,
+} from "express-validator";
 
 const loginValidator = [
   body("email")
@@ -65,7 +70,21 @@ const registerValidator = [
     .withMessage("Password is required")
     .isLength({ min: 6 })
     .escape(),
+  // check("profilePic")
+  //   .optional({ values: "falsy" })
+  //   .custom((value, { req }) => {
+  //     switch (req.file.mimetype) {
+  //       case ".jpeg":
+  //         return ".jpeg";
+  //       case ".png":
+  //         return ".png";
+  //       default:
+  //         return false;
+  //     }
+  //   })
+  //   .withMessage("Please only submit an image"),
   (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(422);
@@ -200,6 +219,22 @@ const authorValidator = [
   },
 ];
 
+const profileDataValidator = [
+  query("username").trim().notEmpty().isString().escape(),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422);
+      res.json({
+        message: "Validation Error",
+        error: errors.array(),
+      });
+      return;
+    }
+    next();
+  },
+];
+
 export {
   loginValidator,
   registerValidator,
@@ -207,4 +242,5 @@ export {
   editSettingValidator,
   articleIdValidator,
   authorValidator,
+  profileDataValidator,
 };

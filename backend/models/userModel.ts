@@ -7,6 +7,7 @@ type userSchemaType = {
   username: string;
   email: string;
   password: string;
+  profilePic: string;
   perferences: {
     contentDisplay: "left" | "right" | "center";
     accountVisibility: "public" | "private";
@@ -55,6 +56,9 @@ const userSchema = new mongoose.Schema<userSchemaType>({
     required: true,
     minlength: 6,
     trim: true,
+  },
+  profilePic: {
+    type: String,
   },
   perferences: {
     type: {},

@@ -1,6 +1,6 @@
 import {
   loginPageProps,
-  profilePageProps,
+  accountPageProps,
   signupPageProps,
 } from "../@types";
 
@@ -18,10 +18,9 @@ const loginUser = async (data: loginPageProps) => {
   return res;
 };
 
-const signupUser = async (data: signupPageProps) => {
+const signupUser = async (data: FormData) => {
   const res = await fetch(`${apiUrl}/users/register`, {
     method: "POST",
-    headers: headers,
     credentials: "include",
     body: JSON.stringify(data),
   });
@@ -44,15 +43,15 @@ const logoutUser = async () => {
   return res;
 };
 
-const profileData = async () => {
-  const res = await fetch(`${apiUrl}/users/profile`, {
+const accountData = async () => {
+  const res = await fetch(`${apiUrl}/users/account`, {
     method: "GET",
     credentials: "include",
   });
   return res;
 };
 
-const editProfile = async (data: profilePageProps) => {
+const editProfile = async (data: accountPageProps) => {
   const res = await fetch(`${apiUrl}/users/profile`, {
     method: "PUT",
     headers: headers,
@@ -138,7 +137,7 @@ export {
   signupUser,
   userAuth,
   logoutUser,
-  profileData,
+  accountData,
   editProfile,
   settingData,
   editSettingData,

@@ -70,16 +70,14 @@ const FollowButton = ({ author }: { author: string }) => {
 
   return (
     <>
-      {isAuth && followingList.length > 0 && (
-        <button
-          className="px-2 border-2 border-black rounded-md hover:cursor-pointer text-r-md"
-          onClick={() => followOrUnfollow()}
-        >
-          {followingList.includes(author)
-            ? "Unfollow"
-            : "Follow"}
-        </button>
-      )}
+      <button
+        className="px-2 border-2 border-black rounded-md hover:cursor-pointer text-r-md"
+        onClick={() => followOrUnfollow()}
+      >
+        {followingList.includes(author)
+          ? "Unfollow"
+          : "Follow"}
+      </button>
     </>
   );
 };

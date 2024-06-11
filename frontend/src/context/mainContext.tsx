@@ -36,7 +36,6 @@ export const MainProvider = ({
 
     if (!response.ok) {
       setIsAuth(false);
-      console.log("Response Error");
     } else {
       setIsAuth(true);
       setUsername(resBody.data);

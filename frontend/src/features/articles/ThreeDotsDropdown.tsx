@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { removeSavedArticle, saveArticle } from "../../api";
 import { toastMsg } from "../../utils/ToastMsg";
+import { useMainContext } from "../../context/mainContext";
 
 const ThreeDotsDropdown = ({
   articleId,
@@ -11,31 +12,40 @@ const ThreeDotsDropdown = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuth } = useMainContext();
 
   const saveArticleToUser = async () => {
-    const response = await saveArticle(articleId);
-    const resBody = await response.json();
+    if (isAuth) {
+      const response = await saveArticle(articleId);
+      const resBody = await response.json();
 
-    if (!response.ok) {
-      toastMsg("error", resBody.message);
-      return;
+      if (!response.ok) {
+        toastMsg("error", resBody.message);
+        return;
+      } else {
+        toastMsg("success", "Article Saved");
+        return;
+      }
     } else {
-      toastMsg("success", "Article Saved");
-      return;
+      toastMsg("error", "Login is required");
     }
   };
 
   const removeArticleFromUser = async () => {
-    const response = await removeSavedArticle(articleId);
-    const resBody = await response.json();
+    if (isAuth) {
+      const response = await removeSavedArticle(articleId);
+      const resBody = await response.json();
 
-    if (!response.ok) {
-      toastMsg("error", resBody.message);
-      return;
+      if (!response.ok) {
+        toastMsg("error", resBody.message);
+        return;
+      } else {
+        toastMsg("success", "Article Removed");
+        navigate(0);
+        return;
+      }
     } else {
-      toastMsg("success", "Article Removed");
-      navigate(0);
-      return;
+      toastMsg("error", "Login is required");
     }
   };
 

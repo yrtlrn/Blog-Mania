@@ -10,6 +10,7 @@ type signupPageProps = {
   username: string;
   email: string;
   password: string;
+  profilePic?: FileList
 };
 
 type accountPageProps = {

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { accountPageProps } from "../@types";
 import { useEffect, useState } from "react";
-import { editProfile, profileData } from "../api";
+import { editProfile, accountData } from "../api";
 import { toastMsg } from "../utils/ToastMsg";
 import { useNavigate } from "react-router-dom";
 
@@ -17,14 +17,14 @@ const AccountPage = () => {
 
   const navigate = useNavigate();
 
-  const getProfileData = async () => {
-    const response = await profileData();
+  const getAccountData = async () => {
+    const response = await accountData();
     const resBody = await response.json();
     reset(resBody);
   };
 
   useEffect(() => {
-    getProfileData();
+    getAccountData();
   }, []);
 
   const onSubmit = async (data: accountPageProps) => {

@@ -73,63 +73,65 @@ const loginUser = asyncHandler(
 // ACCESS   Public
 const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
-    const {
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-    } = req.body;
+    res.status(200).json({message: 'End'})
+    // const {
+    //   firstName,
+    //   lastName,
+    //   username,
+    //   email,
+    //   password,
+    // } = req.body;
 
-    if (
-      !firstName ||
-      !lastName ||
-      !username ||
-      !email ||
-      !password
-    ) {
-      res.status(400);
-      throw new Error(
-        "Please enter all the required fields"
-      );
-    }
+    // if (
+    //   !firstName ||
+    //   !lastName ||
+    //   !username ||
+    //   !email ||
+    //   !password
+    // ) {
+    //   res.status(400);
+    //   throw new Error(
+    //     "Please enter all the required fields"
+    //   );
+    // }
 
-    // Check if duplicate email
-    const dupEmail = await User.findOne({ email: email });
-    if (dupEmail) {
-      res.status(400);
-      throw new Error("Please enter a different Email");
-    }
+    // // Check if duplicate email
+    // const dupEmail = await User.findOne({ email: email });
+    // if (dupEmail) {
+    //   res.status(400);
+    //   throw new Error("Please enter a different Email");
+    // }
 
-    // Check if duplicate username
-    const dupUsername = await User.findOne({
-      username: username,
-    });
-    if (dupUsername) {
-      res.status(400);
-      throw new Error("Please enter a different Username");
-    }
+    // // Check if duplicate username
+    // const dupUsername = await User.findOne({
+    //   username: username,
+    // });
+    // if (dupUsername) {
+    //   res.status(400);
+    //   throw new Error("Please enter a different Username");
+    // }
 
-    const newUser = await User.create({
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-    });
+    // const newUser = await User.create({
+    //   firstName,
+    //   lastName,
+    //   username,
+    //   email,
+    //   password,
+      
+    // });
 
-    if (newUser) {
-      createSession(req, newUser._id, newUser.username);
-      //@ts-ignore
-      req.session.cookie.expires(false);
-      res
-        .status(201)
-        .json({ message: "User created Sucessfully" });
-    } else {
-      res
-        .status(400)
-        .json({ message: "Something went wrong" });
-    }
+    // if (newUser) {
+    //   createSession(req, newUser._id, newUser.username);
+
+    //   req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 day
+    //   res
+    //     .status(201)
+    //     .json({ message: "User created Sucessfully" });
+    // } else {
+    //   res
+    //     .status(400)
+    //     .json({ message: "Something went wrong" });
+    // }
   }
 );
 
@@ -149,7 +151,7 @@ const logoutUser = asyncHandler(
 // ROUTE    GET /api/v1/users/profile
 // ROUTE    GET /api/v1/users/profile
 // ACCESS   Private
-const profileData = asyncHandler(
+const accountData = asyncHandler(
   async (req: Request, res: Response) => {
     const user = await User.findById(
       req.session.userId
@@ -565,11 +567,56 @@ const userAuthCheck = asyncHandler(
   }
 );
 
+// DESC    Get profile data
+// ROUTE   GET /api/v1/users/profile
+// ACCESS  Public
+const profileData = asyncHandler(
+  async (req: Request, res: Response) => {
+    const username = req.query.username;
+
+    if (!username) {
+      res.status(400);
+      throw new Error("Invalid username");
+    }
+
+    const user = await User.findOne({ username: username });
+    const article = await Article.find({
+      author: username,
+    }).select("-__v -updatedAt");
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User does not exist");
+    }
+
+    let data: { [k: string]: any } = {};
+    if (user.perferences.accountVisibility === "private") {
+      data.account = "private";
+      res.status(200).json({ data: data });
+      return;
+    } else {
+      data.articles = article;
+      if (!user.perferences.hideFollowers) {
+        data.followers = user.followers.length;
+      } else {
+        data.followers = "X";
+      }
+      if (!user.perferences.hideFollowing) {
+        data.following = user.following.length;
+      } else {
+        data.following = "X";
+      }
+      res.status(200).json({ data: data });
+      return;
+    }
+  }
+);
+
 export {
   registerUser,
   loginUser,
   logoutUser,
-  profileData,
+  accountData,
   editProfile,
   settingData,
   editSetting,
@@ -581,6 +628,7 @@ export {
   addToFollowing,
   removeFromFollowing,
   userAuthCheck,
+  profileData,
 };
 
 //? Other Functions

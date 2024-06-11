@@ -16,7 +16,21 @@ const getAllArticles = asyncHandler(
     const skip = ((page as number) - 1) * 10;
     const limit = 10;
 
-    const article = await Article.find({})
+    const user = await User.find({
+      "perferences.accountVisibility": "private",
+    })
+      .limit(limit)
+      .select("username");
+
+    let userToAvoid = [];
+
+    for (const data in user) {
+      userToAvoid.push(user[data].username);
+    }
+
+    const article = await Article.find({
+      author: { $nin: userToAvoid },
+    })
       .select("-__v -updatedAt")
       .skip(skip)
       .limit(limit);
@@ -36,6 +50,7 @@ const getAllArticles = asyncHandler(
 const createArticle = asyncHandler(
   async (req: Request, res: Response) => {
     const { title, tag, otherPeople, content } = req.body;
+    
 
     if (!title || !tag || !content) {
       res.status(400);
@@ -142,7 +157,22 @@ const getTagArticles = asyncHandler(
       throw new Error("Invalid Tag");
     }
 
-    const articles = await Article.find({ tag: tag })
+    const user = await User.find({
+      "perferences.accountVisibility": "private",
+    })
+      .limit(limit)
+      .select("username");
+
+    let userToAvoid = [];
+
+    for (const data in user) {
+      userToAvoid.push(user[data].username);
+    }
+
+    const articles = await Article.find({
+      tag: tag,
+      author: { $nin: userToAvoid },
+    })
       .select("-__v -updatedAt")
       .skip(skip)
       .limit(limit);

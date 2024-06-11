@@ -16,6 +16,7 @@ import {
 import ThreeDotsDropdown from "./ThreeDotsDropdown";
 import { motion } from "framer-motion";
 import FollowButton from "../../components/Buttons/FollowButton";
+import { Link } from "react-router-dom";
 
 const ArticleCard = ({ data }: { data: articleType }) => {
   const { isAuth, username } = useMainContext();
@@ -146,7 +147,11 @@ const ArticleCard = ({ data }: { data: articleType }) => {
               P
             </a>
           </div>
-          <h2 className="ml-2 text-r-lg">{data.author}</h2>
+          <h2 className="ml-2 text-r-lg">
+            <Link to={`/users/profile/${data.author}`}>
+              {data.author}
+            </Link>
+          </h2>
           {data.author !== username && (
             <FollowButton author={data.author} />
           )}

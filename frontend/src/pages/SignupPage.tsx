@@ -1,5 +1,5 @@
 // Package Imports
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 // Types Imports
 import { signupPageProps } from "../@types/index";
@@ -15,6 +15,7 @@ const SignupPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm<signupPageProps>();
 
   const navigate = useNavigate();
@@ -34,7 +35,20 @@ const SignupPage = () => {
       setIsLoading(false);
       return;
     }
-    const res = await signupUser(data);
+
+    let formData = new FormData();
+    formData.append("firstName", data.firstName);
+    formData.append("lastName", data.lastName);
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("password", data.firstName);
+    if (data.profilePic) {
+      console.log("There is a profile pic");
+      formData.append("profilePic", data.profilePic[0]);
+    }
+    
+
+    const res = await signupUser(formData);
     const resBody = await res.json();
     if (!res.ok) {
       toastMsg("error", resBody.message);
@@ -47,7 +61,8 @@ const SignupPage = () => {
 
   return (
     <form
-      className="flex flex-col items-center justify-center gap-3 px-10 mb-5 show"
+      className="flex flex-col items-center justify-center gap-3 px-10 mb-5"
+      encType="multipart/form-data"
       onSubmit={handleSubmit(onSubmit)}
     >
       <h1 className="font-bold text-center text-r-5xl">
@@ -160,6 +175,41 @@ const SignupPage = () => {
           </span>
         )}
       </label>
+
+      
+      <Controller
+        control={control}
+        name={"profilePic"}
+        render={({
+          field: { value, onChange, ...field },
+        }) => {
+          return (
+            <>
+              <label className="flex flex-col w-[80%] md:w-[70%] lg:w-[60%] gap-2 text-center my-2">
+                <span className="text-r-2xl">
+                  Profile Picture
+                </span>
+                <input
+                  type="file"
+                  id="profilePic"
+                  accept="image/*"
+                  className="w-full p-2 rounded-md text-r-xl"
+                  {...field}
+                  value={value?.fileName}
+                  onChange={(event) => {
+                    onChange(event.target.files![0]);
+                  }}
+                />
+                {errors.profilePic && (
+                  <span className="errorText">
+                    {errors.profilePic.message}
+                  </span>
+                )}
+              </label>
+            </>
+          );
+        }}
+      />
 
       <button
         className="py-2 font-semibold bg-orange-400 rounded-md text-r-2xl hover:bg-orange-500 w-[80%] md:w-[70%] lg:w-[60%] "
