@@ -58,7 +58,7 @@ const LoginPage = () => {
   
   return (
     <form
-      className="flex flex-col gap-3 absCenter  w-[80%] md:w-[70%] lg:w-[60%]"
+      className="flex flex-col gap-3 absCenter w-[80%] md:w-[70%] lg:w-[60%]"
       onSubmit={handleSubmit(onSubmit)}
     >
       <h1 className="font-bold text-center text-r-5xl">
@@ -116,7 +116,7 @@ const LoginPage = () => {
         />
         <p>Remember Me</p>
       </div>
-      <button className="btn " type="submit" disabled={isLoading} >
+      <button className="py-2 font-semibold bg-orange-400 rounded-md text-r-2xl hover:bg-orange-500 " type="submit" disabled={isLoading} >
         {!isLoading ? (
           "Log In"
         ) : (

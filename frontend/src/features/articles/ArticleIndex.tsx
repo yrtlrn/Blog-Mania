@@ -6,7 +6,9 @@ import {
 } from "./ArticleAPI";
 import ArticleCard from "./ArticleCard";
 import { useParams } from "react-router-dom";
-import { getFollowingList } from "../users/@UsersAPI";
+
+
+
 
 const ArticleIndex = () => {
   let data = useRef<articleType[]>([]);
@@ -15,7 +17,6 @@ const ArticleIndex = () => {
   const [error, setError] = useState<Error>();
   const [page, setPage] = useState(1);
   const { tag } = useParams();
-  const [following, setFollowing] = useState<string[]>([]);
 
   const getArticles = async () => {
     setLoading(true);
@@ -41,11 +42,6 @@ const ArticleIndex = () => {
     data.current = [...allData];
   };
 
-  const followingList = async () => {
-    const response = await getFollowingList();
-    const resBody = await response.json();
-    setFollowing(resBody.data)
-  };
 
   // Infinite Scroll
   const [lastElement, setLastElement] =
@@ -93,13 +89,13 @@ const ArticleIndex = () => {
 
   useEffect(() => {
     firstRender.current = false;
-    followingList();
+    
   }, []);
 
   return (
     <section>
       {error ? (
-        <div>{error.message}</div>
+        <div>Something went wrong</div>
       ) : (
         <section>
           {data.current.map((article, index) => {
@@ -111,7 +107,7 @@ const ArticleIndex = () => {
                     {" "}
                   </div>
                 ) : null}
-                <ArticleCard data={article} followingList={following}  />
+                <ArticleCard data={article}  />
               </section>
             );
           })}

@@ -12,7 +12,7 @@ type signupPageProps = {
   password: string;
 };
 
-type profilePageProps = {
+type accountPageProps = {
   firstName: string;
   lastName: string;
   username: string;
@@ -33,5 +33,5 @@ type UserProps = {
 export type {
   loginPageProps,
   signupPageProps,
-  profilePageProps,
+  accountPageProps,
 };

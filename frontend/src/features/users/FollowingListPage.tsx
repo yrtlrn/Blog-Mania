@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { getFollowersList } from "./@UsersAPI";
+import { getFollowingList } from "./@UsersAPI";
 import { toastMsg } from "../../utils/ToastMsg";
 import UsersCard from "./UsersCard";
 
-const FollowersListPage = () => {
+const FollowingListPage = () => {
   const [data, setdata] = useState<string[]>([]);
 
-  const followersList = async () => {
-    const response = await getFollowersList();
+  const followingList = async () => {
+    const response = await getFollowingList();
     const resBody = await response.json();
     if (!response.ok) {
       toastMsg("error", resBody.message);
@@ -19,17 +19,17 @@ const FollowersListPage = () => {
   };
 
   useEffect(() => {
-    followersList();
+    followingList();
   }, []);
 
   return (
     <section>
       {data.length <= 0 ? (
-        <div>No Followers</div>
+        <div>No Followings</div>
       ) : (
         <UsersCard data={data} />
       )}
     </section>
   );
 };
-export default FollowersListPage;
+export default FollowingListPage;

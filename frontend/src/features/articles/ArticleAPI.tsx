@@ -97,7 +97,7 @@ const commentArticle = async (
 };
 
 const followAUser = async (author: string) => {
-  const res = await fetch(`${apiUrl}/users/following/add`, {
+  const res = await fetch(`${apiUrl}/users/following/follow`, {
     method: "POST",
     headers: headers,
     credentials: "include",
@@ -110,7 +110,7 @@ const followAUser = async (author: string) => {
 
 const unfollowAUser = async (author: string) => {
   const res = await fetch(
-    `${apiUrl}/users/following/remove`,
+    `${apiUrl}/users/following/unfollow`,
     {
       method: "DELETE",
       headers: headers,

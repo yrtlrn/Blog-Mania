@@ -10,27 +10,17 @@ import { toastMsg } from "../../utils/ToastMsg";
 import {
   articleType,
   commentArticle,
-  followAUser,
-  unfollowAUser,
   userLikeArticle,
 } from "./ArticleAPI";
 
 import ThreeDotsDropdown from "./ThreeDotsDropdown";
 import { motion } from "framer-motion";
+import FollowButton from "../../components/Buttons/FollowButton";
 
-const ArticleCard = ({
-  data,
-  followingList,
-}: {
-  data: articleType;
-  followingList: string[];
-}) => {
+const ArticleCard = ({ data }: { data: articleType }) => {
   const { isAuth, username } = useMainContext();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLButtonElement>(null);
-  const [followingUser, setFollowingUser] = useState<
-    string[]
-  >([]);
 
   // Likes
   const likeModified = useRef<string[]>();
@@ -128,56 +118,6 @@ const ArticleCard = ({
     [menuOpen]
   );
 
-  // Follow & Unfollow User
-  const followUser = async () => {
-    if (!isAuth) {
-      toastMsg("error", "Login Required");
-      return;
-    }
-    const response = await followAUser(data.author);
-    const resBody = await response.json();
-    if (!response.ok) {
-      toastMsg("error", resBody.message);
-      return;
-    } else {
-      toastMsg("success", `Follwing ${data.author}`);
-      return;
-    }
-  };
-
-  const unfollowUser = async () => {
-    if (!isAuth) {
-      toastMsg("error", "Login Required");
-      return;
-    }
-
-    const response = await unfollowAUser(data.author);
-    const resBody = await response.json();
-    if (!response.ok) {
-      toastMsg("error", resBody.message);
-      return;
-    } else {
-      toastMsg("success", `Unfollowed ${data.author}`);
-
-      return;
-    }
-  };
-
-  const followOrUnfollow = () => {
-    const elem = document.getElementById(
-      "followOrUnfollowBtn"
-    );
-    if (elem) {
-      if (elem.innerText === "Follow") {
-        followUser();
-        elem.innerText = "Unfollow";
-      } else {
-        unfollowUser();
-        elem.innerText = "Follow";
-      }
-    }
-  };
-
   // UseEffects
   useEffect(() => {
     likeModified.current = data.likes;
@@ -189,10 +129,6 @@ const ArticleCard = ({
   useEffect(() => {
     document.addEventListener("mousedown", closeMenu);
   }, [closeMenu]);
-
-  useEffect(() => {
-    setFollowingUser(followingList);
-  }, [followingList]);
 
   return (
     <article
@@ -212,15 +148,7 @@ const ArticleCard = ({
           </div>
           <h2 className="ml-2 text-r-lg">{data.author}</h2>
           {data.author !== username && (
-            <button
-              className="px-2 border-2 border-black rounded-md hover:cursor-pointer text-r-md"
-              onClick={() => followOrUnfollow()}
-              id="followOrUnfollowBtn"
-            >
-              {followingUser.includes(data.author)
-                ? "Unfollow"
-                : "Follow"}
-            </button>
+            <FollowButton author={data.author} />
           )}
         </div>
         <div className="relative">

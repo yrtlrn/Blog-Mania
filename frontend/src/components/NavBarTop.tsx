@@ -83,7 +83,7 @@ const NavBarTop = () => {
   };
 
   return (
-    <nav className="relative flex justify-between px-4 py-2 bg-orange-400 md:px-6">
+    <nav className="relative flex items-center justify-between px-4 py-2 bg-orange-400 md:px-6">
       <section>
         <Link className="flex-i-center" to={"/"}>
           <img
@@ -229,11 +229,11 @@ const NavBarTop = () => {
                     Saved Articles
                   </Link>
                   <Link
-                    to={"/user/profile"}
+                    to={"/user/account"}
                     className="font-semibold text-r-xl hover:underline"
                     onClick={() => setShowDropdown(false)}
                   >
-                    Profile
+                    Account
                   </Link>
                   <Link
                     to={"/user/setting"}

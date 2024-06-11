@@ -73,13 +73,13 @@ router.delete(
 router.get("/followers", authCheck, followersList);
 router.get("/following", authCheck, followingList);
 router.post(
-  "/following/add",
+  "/following/follow",
   authCheck,
   authorValidator,
   addToFollowing
 );
 router.delete(
-  "/following/remove",
+  "/following/unfollow",
   authCheck,
   authorValidator,
   removeFromFollowing

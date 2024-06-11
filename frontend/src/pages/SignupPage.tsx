@@ -47,7 +47,7 @@ const SignupPage = () => {
 
   return (
     <form
-      className="flex flex-col items-center justify-center gap-3 mb-5"
+      className="flex flex-col items-center justify-center gap-3 px-10 mb-5 show"
       onSubmit={handleSubmit(onSubmit)}
     >
       <h1 className="font-bold text-center text-r-5xl">
@@ -162,7 +162,7 @@ const SignupPage = () => {
       </label>
 
       <button
-        className="btn w-[80%] md:w-[70%] lg:w-[60%] "
+        className="py-2 font-semibold bg-orange-400 rounded-md text-r-2xl hover:bg-orange-500 w-[80%] md:w-[70%] lg:w-[60%] "
         type="submit"
         disabled={isLoading}
       >

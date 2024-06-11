@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
-import { profilePageProps } from "../@types";
+import { accountPageProps } from "../@types";
 import { useEffect, useState } from "react";
 import { editProfile, profileData } from "../api";
 import { toastMsg } from "../utils/ToastMsg";
 import { useNavigate } from "react-router-dom";
 
-const ProfilePage = () => {
+const AccountPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -13,7 +13,7 @@ const ProfilePage = () => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<profilePageProps>();
+  } = useForm<accountPageProps>();
 
   const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ const ProfilePage = () => {
     getProfileData();
   }, []);
 
-  const onSubmit = async (data: profilePageProps) => {
+  const onSubmit = async (data: accountPageProps) => {
     const response = await editProfile(data);
     const resBody = await response.json();
     setIsLoading(true);
@@ -51,7 +51,7 @@ const ProfilePage = () => {
       >
         {/* Heading */}
         <h1 className="font-bold text-center text-r-5xl">
-          Profile
+          Account
         </h1>
         {/* First Name */}
         <label className="flex flex-col w-[80%] md:w-[70%] lg:w-[60%] gap-2">
@@ -212,4 +212,4 @@ const ProfilePage = () => {
     </section>
   );
 };
-export default ProfilePage;
+export default AccountPage;

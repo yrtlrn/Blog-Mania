@@ -4,14 +4,16 @@ import React, {
   useEffect,
 } from "react";
 import { settingData, userAuth } from "../api";
+import { getFollowingList } from "../features/users/@UsersAPI";
 
 type ContextType = {
   isAuth: boolean;
   userAuthFun: () => void;
   username: string;
   contentDisplay: string;
+  followingUserList: string[];
+  getfollowingList: () => void;
 };
-
 const MainContext = React.createContext<ContextType | null>(
   null
 );
@@ -25,6 +27,8 @@ export const MainProvider = ({
   const [username, setUsername] = useState("");
   const [contentDisplay, setContentDisplay] =
     useState("left");
+  const [followingUserList, setFollowingUserList] =
+    useState<string[]>([]);
 
   const userAuthFun = async () => {
     const response = await userAuth();
@@ -46,13 +50,20 @@ export const MainProvider = ({
     return;
   };
 
+  const getfollowingList = async () => {
+    const response = await getFollowingList();
+    const resBody = await response.json();
+    setFollowingUserList(resBody.data);
+  };
+
   useEffect(() => {
     userAuthFun();
   }, []);
 
   useEffect(() => {
     if (isAuth) {
-      getSettingData()
+      getSettingData();
+      getfollowingList();
     }
   }, [isAuth]);
 
@@ -63,6 +74,8 @@ export const MainProvider = ({
         userAuthFun,
         username,
         contentDisplay,
+        followingUserList,
+        getfollowingList,
       }}
     >
       {children}
