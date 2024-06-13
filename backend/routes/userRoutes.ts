@@ -39,7 +39,7 @@ import {
 } from "../middlewares/validation/userValidation";
 import {
   uploadPhoto,
-  resizeAndUploadImage,
+  resizeAndUploadImageSingle,
 } from "../middlewares/imageUploadMW";
 
 const router = express.Router();
@@ -48,7 +48,7 @@ const router = express.Router();
 router.post(
   "/register",
   uploadPhoto.single("profilePic"),
-  resizeAndUploadImage,
+  resizeAndUploadImageSingle,
   registerValidator,
   registerUser
 );

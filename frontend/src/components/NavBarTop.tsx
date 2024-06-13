@@ -7,7 +7,7 @@ import { toastMsg } from "../utils/ToastMsg";
 
 const NavBarTop = () => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { isAuth, userAuthFun } = useMainContext();
+  const { isAuth, userAuthFun,username } = useMainContext();
   const navigate = useNavigate();
 
   // Nav Button Variants
@@ -222,6 +222,13 @@ const NavBarTop = () => {
             >
               {isAuth ? (
                 <>
+                  <Link
+                    to={`/users/profile/${username}`}
+                    className="font-semibold text-r-xl hover:underline"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Profile
+                  </Link>
                   <Link
                     to={"/user/savedArticles"}
                     className="font-semibold text-r-xl hover:underline"

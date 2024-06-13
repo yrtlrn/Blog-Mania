@@ -84,9 +84,9 @@ const registerValidator = [
   //   })
   //   .withMessage("Please only submit an image"),
   (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors)
       res.status(422);
       res.json({
         message: "Validation Error",

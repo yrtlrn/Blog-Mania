@@ -17,6 +17,8 @@ const ProfilePage = () => {
   const [data, setData] = useState<profilePageProps>();
   const [accountPrivate, setAccountPrivate] =
     useState(false);
+  const [hideFollowers, setHideFollowers] = useState(false);
+  const [hideFollowing, setHideFollowing] = useState(false);
 
   const profileData = async () => {
     if (params.id) {
@@ -24,12 +26,22 @@ const ProfilePage = () => {
       const resBody = await response.json();
       if (!response.ok) {
         toastMsg("error", "Could not get data");
-      }
-      if (resBody.data.account === "private") {
-        setAccountPrivate(true);
-      }
-      if (!accountPrivate) {
-        setData(resBody.data);
+      } else {
+        console.log(resBody.data);
+        if (resBody.data.account === "private") {
+          setAccountPrivate(true);
+        }
+        if (resBody.data.followers === "X") {
+          setHideFollowers(true);
+        }
+        if (resBody.data.following === "X") {
+          setHideFollowing(true);
+        }
+        if (!accountPrivate) {
+          setData(resBody.data);
+        }
+        console.log(hideFollowers);
+        console.log(hideFollowers);
       }
     }
   };
@@ -50,8 +62,9 @@ const ProfilePage = () => {
             <h1 className="text-r-2xl">{params.id}</h1>
           </div>
           <div className="flex items-center justify-center">
-            
-          {params.id && <FollowButton author={params.id} />}
+            {params.id && (
+              <FollowButton author={params.id} />
+            )}
           </div>
         </section>
 
@@ -67,7 +80,7 @@ const ProfilePage = () => {
           </div>
           <div className="text-center">
             <span className="text-r-xl">
-              {data && !accountPrivate
+              {data && !accountPrivate && !hideFollowers
                 ? data.followers
                 : "X"}
             </span>
@@ -75,7 +88,7 @@ const ProfilePage = () => {
           </div>
           <div className="text-center">
             <span className="text-r-xl">
-              {data && !accountPrivate
+              {data && !accountPrivate && !hideFollowing
                 ? data.following
                 : "X"}
             </span>
@@ -89,14 +102,17 @@ const ProfilePage = () => {
         <h1 className="font-semibold text-center text-r-2xl">
           Articles
         </h1>
-        {data?.articles ?
+        {data?.articles ? (
           data.articles.map((article) => {
             return (
               <article key={article.title}>
                 <ArticleCard data={article} />
               </article>
             );
-          }) : <span className="text-r-xl">No Articles</span>}
+          })
+        ) : (
+          <span className="text-r-xl">No Articles</span>
+        )}
       </section>
     </section>
   );

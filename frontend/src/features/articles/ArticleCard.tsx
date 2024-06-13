@@ -10,6 +10,8 @@ import { toastMsg } from "../../utils/ToastMsg";
 import {
   articleType,
   commentArticle,
+  deleteAComment,
+  editAComment,
   userLikeArticle,
 } from "./ArticleAPI";
 
@@ -31,11 +33,12 @@ const ArticleCard = ({ data }: { data: articleType }) => {
   // Comments
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState("");
-  const commentModified =
-    useRef<
-      { username: string; content: string; date: string }[]
-    >();
+  const [commentModified, setCommentModified] = useState<
+    { username: string; content: string; date: string }[]
+  >([]);
   const [commentsNumber, setCommentsNumber] = useState(0);
+  const [alreadyCommented, setAlreadyCommented] =
+    useState(false);
 
   // Functions
   const likeOrDislikeArticle = async () => {
@@ -90,15 +93,52 @@ const ArticleCard = ({ data }: { data: articleType }) => {
       return;
     } else {
       toastMsg("success", "Commented");
-      if (commentModified.current) {
-        commentModified.current.push({
-          username: username,
-          content: comment,
-          date: "",
-        });
-        setCommentsNumber((prev) => prev + 1);
-      }
+      const newComment = {
+        username: username,
+        content: comment,
+        date: "",
+      };
+      setCommentModified([...commentModified, newComment]);
+      setAlreadyCommented(true)
+
+      setCommentsNumber((prev) => prev + 1);
+    }
+  };
+
+  const editComment = async (articleId: string) => {
+    const response = await editAComment(articleId, comment);
+    const resBody = await response.json();
+    if (!response.ok) {
+      toastMsg("error", resBody.message);
       return;
+    } else {
+      toastMsg("success", "Comment Edited");
+      const newComments = commentModified.map((com) => {
+        if (com.username === username) {
+          return { ...com, content: comment };
+        }
+        return com;
+      });
+      setCommentModified(newComments);
+    }
+  };
+
+  const deleteComment = async (articleId: string) => {
+    const response = await deleteAComment(articleId);
+    const resBody = await response.json();
+    if (!response.ok) {
+      toastMsg("error", resBody.message);
+      return;
+    } else {
+      toastMsg("success", "Comment Deleted");
+      const newComments = commentModified.filter((com) => {
+        if (com.username !== username) {
+          setComment("");
+          setAlreadyCommented(false);
+          return com;
+        }
+      });
+      setCommentModified(newComments);
     }
   };
 
@@ -122,7 +162,7 @@ const ArticleCard = ({ data }: { data: articleType }) => {
   // UseEffects
   useEffect(() => {
     likeModified.current = data.likes;
-    commentModified.current = data.comments;
+    setCommentModified(data.comments);
     setlikesNumber(data.likes.length);
     setCommentsNumber(data.comments.length);
   }, []);
@@ -219,6 +259,13 @@ const ArticleCard = ({ data }: { data: articleType }) => {
             className="btn "
             onClick={() => {
               setShowComments((prev) => !prev);
+
+              commentModified?.some((comment) => {
+                if (comment.username === username) {
+                  setComment(comment.content);
+                  setAlreadyCommented(true);
+                }
+              });
             }}
           >
             Comments
@@ -235,29 +282,80 @@ const ArticleCard = ({ data }: { data: articleType }) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
-          <button
-            className="btn"
-            onClick={() => commentOnArticle()}
-          >
-            Comment
-          </button>
-          {commentModified.current!.map(
-            (comment, index) => {
+
+          <div className="flex items-center justify-between gap-3">
+            {alreadyCommented ? (
+              <>
+                <button
+                  className="w-[50%] p-2 bg-orange-400 border-2 border-black rounded-md hover:bg-orange-500 text-r-xl text-white "
+                  onClick={() => editComment(data._id)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="w-[50%] p-2 bg-orange-400 border-2 border-black rounded-md hover:bg-orange-500 text-r-xl text-white "
+                  onClick={() => deleteComment(data._id)}
+                >
+                  Delete
+                </button>
+              </>
+            ) : (
+              <button
+                className="w-full p-2 text-white bg-orange-400 border-2 border-black rounded-md hover:bg-orange-500 text-r-xl"
+                onClick={() => commentOnArticle()}
+              >
+                Comment
+              </button>
+            )}
+          </div>
+
+          {alreadyCommented && (
+            <div>
+              {commentModified.map((comment, index) => {
+                if (comment.username === username) {
+                  return (
+                    <div
+                      className="grid grid-cols-2"
+                      key={index}
+                    >
+                      <p className="h-full my-2 text-center">
+                        <Link
+                          to={`/users/profile/${comment.username}`}
+                        >
+                          {comment.username}
+                        </Link>
+                        {"   ---"}
+                      </p>
+                      <p className="my-2 ">
+                        {comment.content}
+                      </p>
+                    </div>
+                  );
+                }
+              })}
+            </div>
+          )}
+
+          {commentModified!.map((comment, index) => {
+            if (comment.username !== username) {
               return (
                 <div
-                  className="grid grid-cols-3"
+                  className="grid grid-cols-2"
                   key={index}
                 >
                   <p className="h-full my-2 text-center">
-                    {comment.username} ---
-                  </p>{" "}
-                  <p className="col-span-2 my-2">
-                    {comment.content}
+                    <Link
+                      to={`/users/profile/${comment.username}`}
+                    >
+                      {comment.username}
+                    </Link>
+                    {"   ---"}
                   </p>
+                  <p className="my-2 ">{comment.content}</p>
                 </div>
               );
             }
-          )}
+          })}
         </section>
       ) : (
         ""

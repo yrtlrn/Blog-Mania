@@ -16,7 +16,7 @@ import {
 // Middleware Imports
 import {
   uploadPhoto,
-  resizeAndUploadImage,
+  resizeAndUploadImageArray,
 } from "../middlewares/imageUploadMW";
 
 // Utils Imports
@@ -39,7 +39,7 @@ router
   .post(
     authCheck,
     uploadPhoto.array("imageFiles", 6),
-    resizeAndUploadImage,
+    resizeAndUploadImageArray,
     createArticleValidator,
     createArticle
   );

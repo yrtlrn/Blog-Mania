@@ -48,7 +48,7 @@ const loginUser = asyncHandler(
       if (req.body.remember) {
         req.session.cookie.maxAge = 14 * 24 * 3600000; // 2 Weeks
       } else {
-        req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 day
+        req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 Day
       }
 
       res
@@ -73,65 +73,72 @@ const loginUser = asyncHandler(
 // ACCESS   Public
 const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
-    res.status(200).json({message: 'End'})
-    // const {
-    //   firstName,
-    //   lastName,
-    //   username,
-    //   email,
-    //   password,
-    // } = req.body;
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+    } = req.body;
 
-    // if (
-    //   !firstName ||
-    //   !lastName ||
-    //   !username ||
-    //   !email ||
-    //   !password
-    // ) {
-    //   res.status(400);
-    //   throw new Error(
-    //     "Please enter all the required fields"
-    //   );
-    // }
+    if (
+      !firstName ||
+      !lastName ||
+      !username ||
+      !email ||
+      !password
+    ) {
+      res.status(400);
+      throw new Error(
+        "Please enter all the required fields"
+      );
+    }
 
-    // // Check if duplicate email
-    // const dupEmail = await User.findOne({ email: email });
-    // if (dupEmail) {
-    //   res.status(400);
-    //   throw new Error("Please enter a different Email");
-    // }
+    // Check if duplicate email
+    const dupEmail = await User.findOne({ email: email });
+    if (dupEmail) {
+      res.status(400);
+      throw new Error("Please enter a different Email");
+    }
 
-    // // Check if duplicate username
-    // const dupUsername = await User.findOne({
-    //   username: username,
-    // });
-    // if (dupUsername) {
-    //   res.status(400);
-    //   throw new Error("Please enter a different Username");
-    // }
+    // Check if duplicate username
+    const dupUsername = await User.findOne({
+      username: username,
+    });
+    if (dupUsername) {
+      res.status(400);
+      throw new Error("Please enter a different Username");
+    }
+    let imageUrl;
+    console.log(req.file);
+    console.log(req.imageUrls);
+    if (req.imageUrls.length > 0) {
+      imageUrl = req.imageUrls[0];
+    } else {
+      imageUrl = "";
+    }
 
-    // const newUser = await User.create({
-    //   firstName,
-    //   lastName,
-    //   username,
-    //   email,
-    //   password,
-      
-    // });
+    const newUser = await User.create({
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      profilePic: imageUrl,
+    });
 
-    // if (newUser) {
-    //   createSession(req, newUser._id, newUser.username);
+    if (newUser) {
+      createSession(req, newUser._id, newUser.username);
 
-    //   req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 day
-    //   res
-    //     .status(201)
-    //     .json({ message: "User created Sucessfully" });
-    // } else {
-    //   res
-    //     .status(400)
-    //     .json({ message: "Something went wrong" });
-    // }
+      req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 1 Day
+      res
+        .status(201)
+        .json({ message: "User created Sucessfully" });
+    } else {
+      res
+        .status(400)
+        .json({ message: "Something went wrong" });
+    }
   }
 );
 
@@ -310,7 +317,14 @@ const editSetting = asyncHandler(
 
     const updatedUser = await User.findByIdAndUpdate(
       req.session.userId,
-      { perferences: req.body },
+      {
+        perferences: {
+          contentDisplay: contentDisplay,
+          accountVisibility: accountVisibility,
+          hideFollowers: hideFollowers as boolean,
+          hideFollowing: hideFollowing as boolean,
+        },
+      },
       { runValidators: true }
     );
 
@@ -590,22 +604,32 @@ const profileData = asyncHandler(
     }
 
     let data: { [k: string]: any } = {};
-    if (user.perferences.accountVisibility === "private") {
-      data.account = "private";
-      res.status(200).json({ data: data });
-      return;
+    if (username !== req.session.username) {
+      if (
+        user.perferences.accountVisibility === "private"
+      ) {
+        data.account = "private";
+        res.status(200).json({ data: data });
+        return;
+      } else {
+        data.articles = article;
+        if (!user.perferences.hideFollowers) {
+          data.followers = user.followers.length;
+        } else {
+          data.followers = "X";
+        }
+        if (!user.perferences.hideFollowing) {
+          data.following = user.following.length;
+        } else {
+          data.following = "X";
+        }
+        res.status(200).json({ data: data });
+        return;
+      }
     } else {
       data.articles = article;
-      if (!user.perferences.hideFollowers) {
-        data.followers = user.followers.length;
-      } else {
-        data.followers = "X";
-      }
-      if (!user.perferences.hideFollowing) {
-        data.following = user.following.length;
-      } else {
-        data.following = "X";
-      }
+      data.following = user.following.length;
+      data.followers = user.followers.length;
       res.status(200).json({ data: data });
       return;
     }

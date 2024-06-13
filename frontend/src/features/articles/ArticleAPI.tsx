@@ -96,15 +96,51 @@ const commentArticle = async (
   return res;
 };
 
+const editAComment = async (
+  articleId: string,
+  newComment: string
+) => {
+  const res = await fetch(
+    `${apiUrl}/articles/comment/edit`,
+    {
+      method: "PUT",
+      credentials: "include",
+      headers: headers,
+      body: JSON.stringify({
+        articleId: articleId,
+        newComment: newComment,
+      }),
+    }
+  );
+  return res;
+};
+const deleteAComment = async (articleId: string) => {
+  const res = await fetch(
+    `${apiUrl}/articles/comment/delete`,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: headers,
+      body: JSON.stringify({
+        articleId: articleId,
+      }),
+    }
+  );
+  return res;
+};
+
 const followAUser = async (author: string) => {
-  const res = await fetch(`${apiUrl}/users/following/follow`, {
-    method: "POST",
-    headers: headers,
-    credentials: "include",
-    body: JSON.stringify({
-      author,
-    }),
-  });
+  const res = await fetch(
+    `${apiUrl}/users/following/follow`,
+    {
+      method: "POST",
+      headers: headers,
+      credentials: "include",
+      body: JSON.stringify({
+        author,
+      }),
+    }
+  );
   return res;
 };
 
@@ -130,4 +166,6 @@ export {
   commentArticle,
   followAUser,
   unfollowAUser,
+  editAComment,
+  deleteAComment
 };

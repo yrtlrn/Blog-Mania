@@ -34,18 +34,13 @@ const uploadToCloudinary = (
   });
 };
 
-const resizeAndUploadImage = async (
+const resizeAndUploadImageArray = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Step 1")
-  console.log(req.body)
   if (!req.files || req.files.length === 0) return next();
-  console.log("Step 2")
   try {
-    console.log(req.files)
-    console.log('Reseize')
     //@ts-ignore
     const uploadPromises = req.files.map(
       (file: Express.Multer.File) =>
@@ -55,12 +50,43 @@ const resizeAndUploadImage = async (
       { url: string }
     ];
     req.imageUrls = results.map((result) => result.url);
-    
+
     next();
   } catch (error) {
-    console.log("error Occured in reseize and upload")
+    console.log("Error Occured in reseize and upload");
     next(error);
   }
 };
 
-export { uploadPhoto, resizeAndUploadImage };
+const resizeAndUploadImageSingle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.file) return next();
+  try {
+    //@ts-ignore
+    const uploadFile = req.file as Express.Multer.File;
+
+    const result = (await uploadToCloudinary(
+      uploadFile.buffer,
+      {}
+    )) as {url: string};
+
+    // const results = (await Promise.all(uploadPromises)) as [
+    //   { url: string }
+    // ];
+
+    req.imageUrls = [result.url];
+    next();
+  } catch (error) {
+    console.log("Error Occured in reseize and upload");
+    next(error);
+  }
+};
+
+export {
+  uploadPhoto,
+  resizeAndUploadImageArray,
+  resizeAndUploadImageSingle,
+};

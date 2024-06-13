@@ -1,7 +1,6 @@
 import {
   loginPageProps,
   accountPageProps,
-  signupPageProps,
 } from "../@types";
 
 const apiUrl = "http://localhost:3000/api/v1";
@@ -22,7 +21,7 @@ const signupUser = async (data: FormData) => {
   const res = await fetch(`${apiUrl}/users/register`, {
     method: "POST",
     credentials: "include",
-    body: JSON.stringify(data),
+    body: data,
   });
   return res;
 };
